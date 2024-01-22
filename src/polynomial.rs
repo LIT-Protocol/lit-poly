@@ -1,5 +1,7 @@
 mod field;
 
+pub use field::PolyPrimeField;
+
 use rand::RngCore;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -7,8 +9,8 @@ use std::{
     ops::{Add, AddAssign, Mul, MulAssign, Neg, Sub, SubAssign},
 };
 
-/// Common interface for Univariate and Multivariate polynomials
-/// that can be dense or sparse
+/// Common interface for polynomials
+/// that can be dense or sparse.
 pub trait Polynomial<T>:
     Sized
     + Clone
@@ -40,10 +42,8 @@ pub trait Polynomial<T>:
 
     /// The polynomial with degree zero
     const ZERO: Self;
-
     /// Is this polynomial empty
     fn is_zero(&self) -> bool;
-
     /// The polynomial with degree one
     fn one() -> Self;
     /// The polynomials total degree
@@ -53,11 +53,11 @@ pub trait Polynomial<T>:
     /// Determines if this polynomial cyclotomic
     fn is_cyclotomic(&self) -> bool;
     /// Returns the coefficients of the polynomial
-    fn coefficients(&self) -> &[Self::X];
+    fn coefficients(&self) -> &[T];
     /// Returns the mutable coefficients of the polynomial
-    fn coefficients_mut(&mut self) -> &mut [Self::X];
+    fn coefficients_mut(&mut self) -> &mut [T];
     /// Create a polynomial from the given coefficients
-    fn from_coefficients<B: AsRef<[Self::X]>>(coefficients: B) -> Self;
+    fn from_coefficients<B: AsRef<[T]>>(coefficients: B) -> Self;
     /// Create a random polynomial of the given degree
     /// where each coefficient is sampled uniformly at random
     fn random(degree: usize, rng: impl RngCore) -> Self;
