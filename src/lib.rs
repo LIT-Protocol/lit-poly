@@ -1,7 +1,6 @@
 //!
 //!
 #![deny(
-    unsafe_code,
     missing_docs,
     missing_debug_implementations,
     unused_qualifications,
