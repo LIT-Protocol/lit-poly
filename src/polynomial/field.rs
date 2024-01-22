@@ -467,17 +467,23 @@ fn mul_poly<F: PrimeField>(lhs: &mut Vec<F>, rhs: &[F]) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use elliptic_curve::Field;
-    use k256::Scalar;
     use rand::SeedableRng;
     use rand_chacha::ChaChaRng;
+    use rstest::*;
 
-    #[test]
-    fn poly_mod() {
+    #[rstest]
+    #[case::k256(k256::Scalar::default())]
+    #[case::p256(p256::Scalar::default())]
+    #[case::p384(p384::Scalar::default())]
+    #[case::ed25519(vsss_rs::curve25519::WrappedScalar::default())]
+    #[case::bls12_381(bls12_381_plus::Scalar::default())]
+    #[case::ed448(ed448_goldilocks_plus::Scalar::default())]
+    #[case::jubjub(jubjub::Scalar::default())]
+    fn poly_mod<F: PrimeField>(#[case] _f: F) {
         let mut rng = ChaChaRng::from_seed([7u8; 32]);
 
-        let a = PolyPrimeField((0..63).map(|_| Scalar::random(&mut rng)).collect());
-        let b = PolyPrimeField((0..33).map(|_| Scalar::random(&mut rng)).collect());
+        let a = PolyPrimeField((0..63).map(|_| F::random(&mut rng)).collect());
+        let b = PolyPrimeField((0..33).map(|_| F::random(&mut rng)).collect());
 
         let (div, rem) = a.poly_mod(&b);
         let div_b = &div * &b;
@@ -486,22 +492,61 @@ mod tests {
         assert_eq!(a, div_b_pr);
     }
 
-    #[test]
-    fn poly_mod_cyclotomic() {
+    #[rstest]
+    #[case::k256(k256::Scalar::default())]
+    #[case::p256(p256::Scalar::default())]
+    #[case::p384(p384::Scalar::default())]
+    #[case::ed25519(vsss_rs::curve25519::WrappedScalar::default())]
+    #[case::bls12_381(bls12_381_plus::Scalar::default())]
+    #[case::ed448(ed448_goldilocks_plus::Scalar::default())]
+    #[case::jubjub(jubjub::Scalar::default())]
+    fn poly_mod_cyclotomic<F: PrimeField>(#[case] _f: F) {
         const DEGREE: usize = 320;
         let mut rng = ChaChaRng::from_seed([11u8; 32]);
         let a = PolyPrimeField(
             (0..2 * DEGREE - 1)
-                .map(|_| Scalar::random(&mut rng))
+                .map(|_| F::random(&mut rng))
                 .collect(),
         );
-        let mut b = PolyPrimeField((0..DEGREE + 1).map(|_| Scalar::ZERO).collect());
-        b.0[0] = -Scalar::ONE;
-        b.0[DEGREE] = Scalar::ONE;
+        let mut b = PolyPrimeField((0..DEGREE + 1).map(|_| F::ZERO).collect());
+        b.0[0] = -F::ONE;
+        b.0[DEGREE] = F::ONE;
         let (div, rem) = a.poly_mod(&b);
         let div_b = &div * &b;
         let mut div_b_pr = &div_b + &rem;
         div_b_pr.trim();
         assert_eq!(a, div_b_pr);
+    }
+
+    #[rstest]
+    #[case::k256(k256::Scalar::default())]
+    #[case::p256(p256::Scalar::default())]
+    #[case::p384(p384::Scalar::default())]
+    #[case::ed25519(vsss_rs::curve25519::WrappedScalar::default())]
+    #[case::bls12_381(bls12_381_plus::Scalar::default())]
+    #[case::ed448(ed448_goldilocks_plus::Scalar::default())]
+    #[case::jubjub(jubjub::Scalar::default())]
+    fn serialize<F: PrimeField>(#[case] _f: F) {
+        let mut rng = ChaChaRng::from_seed([11u8; 32]);
+        let a = PolyPrimeField(
+            (0..10)
+                .map(|_| F::random(&mut rng))
+                .collect(),
+        );
+        let res = serde_json::to_string(&a);
+        assert!(res.is_ok());
+        let serialized = res.unwrap();
+        let res = serde_json::from_str::<PolyPrimeField<F>>(&serialized);
+        assert!(res.is_ok());
+        let deserialized = res.unwrap();
+        assert_eq!(a, deserialized);
+
+        let res = serde_bare::to_vec(&a);
+        assert!(res.is_ok());
+        let serialized = res.unwrap();
+        let res = serde_bare::from_slice::<PolyPrimeField<F>>(&serialized);
+        assert!(res.is_ok());
+        let deserialized = res.unwrap();
+        assert_eq!(a, deserialized);
     }
 }
