@@ -7,6 +7,7 @@ use serde::{
 use std::{
     fmt::{Debug, Display, Formatter, Result as FmtResult},
     marker::PhantomData,
+    str::FromStr,
 };
 
 /// A polynomial over a prime field
@@ -39,8 +40,23 @@ impl<F: PrimeField> Display for PolyPrimeField<F> {
             .iter()
             .map(|c| hex::encode(c.to_repr().as_ref()))
             .collect::<Vec<_>>()
-            .join(", ");
-        write!(f, "[{}]", vals)
+            .join(",");
+        write!(f, "{}", vals)
+    }
+}
+
+impl<F: PrimeField> FromStr for PolyPrimeField<F> {
+    type Err = &'static str;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let mut coeffs = Vec::new();
+        for c in s.split(',') {
+            let mut repr = F::Repr::default();
+            let bytes = hex::decode(c.trim()).map_err(|_| "Invalid hex")?;
+            repr.as_mut().copy_from_slice(&bytes[..]);
+            coeffs.push(Option::from(F::from_repr(repr)).ok_or("Invalid scalar")?);
+        }
+        Ok(Self(coeffs))
     }
 }
 
@@ -349,7 +365,10 @@ impl<F: PrimeField> Polynomial<F> for PolyPrimeField<F> {
 
     fn poly_mod(&self, m: &Self) -> (Self, Self) {
         if m.is_cyclotomic() {
-            let degree = m.0.iter().rposition(|c| bool::from(!c.is_zero())).expect("m is cyclotomic");
+            let degree =
+                m.0.iter()
+                    .rposition(|c| bool::from(!c.is_zero()))
+                    .expect("m is cyclotomic");
             return self.poly_mod_cyclotomic(degree);
         }
         let self_degree = self.degree();
@@ -414,6 +433,63 @@ impl<F: PrimeField> PolyPrimeField<F> {
                 return;
             }
         }
+    }
+}
+
+impl<F: PrimeField> From<PolyPrimeField<F>> for Vec<u8> {
+    fn from(p: PolyPrimeField<F>) -> Self {
+        Self::from(&p)
+    }
+}
+
+impl<F: PrimeField> From<&PolyPrimeField<F>> for Vec<u8> {
+    fn from(p: &PolyPrimeField<F>) -> Self {
+        let mut bytes = vec![];
+        for c in p.0.iter() {
+            bytes.extend_from_slice(c.to_repr().as_ref());
+        }
+        bytes
+    }
+}
+
+impl<F: PrimeField> TryFrom<Vec<u8>> for PolyPrimeField<F> {
+    type Error = &'static str;
+    fn try_from(bytes: Vec<u8>) -> Result<Self, Self::Error> {
+        Self::try_from(&bytes[..])
+    }
+}
+
+impl<F: PrimeField> TryFrom<&Vec<u8>> for PolyPrimeField<F> {
+    type Error = &'static str;
+
+    fn try_from(value: &Vec<u8>) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_slice())
+    }
+}
+
+impl<F: PrimeField> TryFrom<&[u8]> for PolyPrimeField<F> {
+    type Error = &'static str;
+
+    fn try_from(bytes: &[u8]) -> Result<Self, Self::Error> {
+        let mut repr = F::Repr::default();
+        let sc_len = repr.as_ref().len();
+        if bytes.len() % sc_len != 0 {
+            panic!("Invalid length: {}", bytes.len());
+        }
+        let mut coeffs = Vec::with_capacity(bytes.len() / sc_len);
+        for chunk in bytes.chunks(sc_len) {
+            repr.as_mut().copy_from_slice(chunk);
+            coeffs.push(Option::from(F::from_repr(repr)).expect("Invalid scalar"));
+        }
+        Ok(Self(coeffs))
+    }
+}
+
+impl<F: PrimeField> TryFrom<Box<[u8]>> for PolyPrimeField<F> {
+    type Error = &'static str;
+
+    fn try_from(value: Box<[u8]>) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_ref())
     }
 }
 
@@ -503,11 +579,7 @@ mod tests {
     fn poly_mod_cyclotomic<F: PrimeField>(#[case] _f: F) {
         const DEGREE: usize = 320;
         let mut rng = ChaChaRng::from_seed([11u8; 32]);
-        let a = PolyPrimeField(
-            (0..2 * DEGREE - 1)
-                .map(|_| F::random(&mut rng))
-                .collect(),
-        );
+        let a = PolyPrimeField((0..2 * DEGREE - 1).map(|_| F::random(&mut rng)).collect());
         let mut b = PolyPrimeField((0..DEGREE + 1).map(|_| F::ZERO).collect());
         b.0[0] = -F::ONE;
         b.0[DEGREE] = F::ONE;
@@ -528,11 +600,7 @@ mod tests {
     #[case::jubjub(jubjub::Scalar::default())]
     fn serialize<F: PrimeField>(#[case] _f: F) {
         let mut rng = ChaChaRng::from_seed([11u8; 32]);
-        let a = PolyPrimeField(
-            (0..10)
-                .map(|_| F::random(&mut rng))
-                .collect(),
-        );
+        let a = PolyPrimeField((0..10).map(|_| F::random(&mut rng)).collect());
         let res = serde_json::to_string(&a);
         assert!(res.is_ok());
         let serialized = res.unwrap();
