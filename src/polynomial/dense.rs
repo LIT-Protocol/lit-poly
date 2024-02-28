@@ -1,5 +1,6 @@
 use super::*;
 use elliptic_curve::PrimeField;
+use rayon::prelude::*;
 use serde::{
     de::{Error as E, Visitor},
     Deserializer, Serializer,
@@ -149,9 +150,7 @@ impl<F: PrimeField> Neg for &DensePolyPrimeField<F> {
 
     fn neg(self) -> Self::Output {
         let mut output = self.clone();
-        for c in output.0.iter_mut() {
-            *c = -*c;
-        }
+        output.0.par_iter_mut().for_each(|c| *c = -*c);
         output
     }
 }
@@ -198,6 +197,39 @@ impl<F: PrimeField> Mul for DensePolyPrimeField<F> {
     }
 }
 
+impl<F: PrimeField> Mul<&F> for &DensePolyPrimeField<F> {
+    type Output = DensePolyPrimeField<F>;
+
+    fn mul(self, rhs: &F) -> Self::Output {
+        self * *rhs
+    }
+}
+
+impl<F: PrimeField> Mul<F> for &DensePolyPrimeField<F> {
+    type Output = DensePolyPrimeField<F>;
+
+    fn mul(self, rhs: F) -> Self::Output {
+        let output = self.0.par_iter().map(|s| *s * rhs).collect();
+        DensePolyPrimeField(output)
+    }
+}
+
+impl<F: PrimeField> Mul<&F> for DensePolyPrimeField<F> {
+    type Output = Self;
+
+    fn mul(self, rhs: &F) -> Self::Output {
+        &self * *rhs
+    }
+}
+
+impl<F: PrimeField> Mul<F> for DensePolyPrimeField<F> {
+    type Output = Self;
+
+    fn mul(self, rhs: F) -> Self::Output {
+        &self * rhs
+    }
+}
+
 impl<F: PrimeField> MulAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
     fn mul_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
         mul_poly(&mut self.0, &rhs.0);
@@ -210,11 +242,23 @@ impl<F: PrimeField> MulAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F>
     }
 }
 
+impl<F: PrimeField> MulAssign<&F> for DensePolyPrimeField<F> {
+    fn mul_assign(&mut self, rhs: &F) {
+        *self *= *rhs;
+    }
+}
+
+impl<F: PrimeField> MulAssign<F> for DensePolyPrimeField<F> {
+    fn mul_assign(&mut self, rhs: F) {
+        self.0.par_iter_mut().for_each(|coeff| *coeff *= rhs);
+    }
+}
+
 impl<F: PrimeField> Serialize for DensePolyPrimeField<F> {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         if s.is_human_readable() {
             self.0
-                .iter()
+                .par_iter()
                 .map(|sc| hex::encode(sc.to_repr().as_ref()))
                 .collect::<Vec<_>>()
                 .serialize(s)
@@ -379,6 +423,22 @@ impl<F: PrimeField> Polynomial<F> for DensePolyPrimeField<F> {
     }
 }
 
+impl<'a, F: PrimeField> FromIterator<&'a F> for DensePolyPrimeField<F> {
+    fn from_iter<T: IntoIterator<Item = &'a F>>(iter: T) -> Self {
+        let mut inner = Vec::new();
+        for coeff in iter {
+            inner.push(*coeff);
+        }
+        Self(inner)
+    }
+}
+
+impl<F: PrimeField> FromIterator<F> for DensePolyPrimeField<F> {
+    fn from_iter<T: IntoIterator<Item = F>>(iter: T) -> Self {
+        Self(Vec::from_iter(iter))
+    }
+}
+
 impl<F: PrimeField> DensePolyPrimeField<F> {
     fn poly_mod_cyclotomic(&self, degree: usize) -> (Self, Self) {
         if self.0.len() <= degree {
@@ -392,8 +452,8 @@ impl<F: PrimeField> DensePolyPrimeField<F> {
             div.push(self.0[i]);
         });
         (
-            Self(div.into_iter().rev().collect()),
-            Self(remainder.0.into_iter().take(degree).collect()),
+            Self(div.into_par_iter().rev().collect()),
+            Self(remainder.0.into_par_iter().take(degree).collect()),
         )
     }
 

@@ -247,7 +247,9 @@ impl<F: PrimeField> MulAssign<&SparsePolyPrimeField<F>> for SparsePolyPrimeField
                             }
                         }
                         Entry::Vacant(e) => {
-                            e.insert(new_coeff);
+                            if new_coeff != F::ZERO {
+                                e.insert(new_coeff);
+                            }
                         }
                     }
                 }
@@ -335,6 +337,179 @@ impl<'de, F: PrimeField> Deserialize<'de> for SparsePolyPrimeField<F> {
     }
 }
 
+impl<F: PrimeField> FromIterator<(usize, F)> for SparsePolyPrimeField<F> {
+    fn from_iter<T: IntoIterator<Item = (usize, F)>>(iter: T) -> Self {
+        let mut inner = BTreeMap::new();
+        for (power, coeff) in iter {
+            match inner.entry(power) {
+                Entry::Occupied(e) => {
+                    let new_coeff = coeff + e.remove();
+                    if new_coeff != F::ZERO {
+                        inner.insert(power, new_coeff);
+                    }
+                }
+                Entry::Vacant(e) => {
+                    if coeff != F::ZERO {
+                        e.insert(coeff);
+                    }
+                }
+            }
+        }
+        Self(inner)
+    }
+}
+
+impl<'a, F: PrimeField> FromIterator<(&'a usize, F)> for SparsePolyPrimeField<F> {
+    fn from_iter<T: IntoIterator<Item = (&'a usize, F)>>(iter: T) -> Self {
+        let mut inner = BTreeMap::new();
+        for (power, coeff) in iter {
+            match inner.entry(*power) {
+                Entry::Occupied(e) => {
+                    let new_coeff = coeff + e.remove();
+                    if new_coeff != F::ZERO {
+                        inner.insert(*power, new_coeff);
+                    }
+                }
+                Entry::Vacant(e) => {
+                    if coeff != F::ZERO {
+                        e.insert(coeff);
+                    }
+                }
+            }
+        }
+        Self(inner)
+    }
+}
+
+impl<'a, F: PrimeField> FromIterator<(usize, &'a F)> for SparsePolyPrimeField<F> {
+    fn from_iter<T: IntoIterator<Item = (usize, &'a F)>>(iter: T) -> Self {
+        let mut inner = BTreeMap::new();
+        for (power, coeff) in iter {
+            match inner.entry(power) {
+                Entry::Occupied(e) => {
+                    let new_coeff = *coeff + e.remove();
+                    if new_coeff != F::ZERO {
+                        inner.insert(power, new_coeff);
+                    }
+                }
+                Entry::Vacant(e) => {
+                    if *coeff != F::ZERO {
+                        e.insert(*coeff);
+                    }
+                }
+            }
+        }
+        Self(inner)
+    }
+}
+
+impl<'a, F: PrimeField> FromIterator<(&'a usize, &'a F)> for SparsePolyPrimeField<F> {
+    fn from_iter<T: IntoIterator<Item = (&'a usize, &'a F)>>(iter: T) -> Self {
+        let mut inner = BTreeMap::new();
+        for (power, coeff) in iter {
+            match inner.entry(*power) {
+                Entry::Occupied(e) => {
+                    let new_coeff = *coeff + e.remove();
+                    if new_coeff != F::ZERO {
+                        inner.insert(*power, new_coeff);
+                    }
+                }
+                Entry::Vacant(e) => {
+                    if *coeff != F::ZERO {
+                        e.insert(*coeff);
+                    }
+                }
+            }
+        }
+        Self(inner)
+    }
+}
+
+impl<'a, F: PrimeField> FromIterator<&'a (usize, F)> for SparsePolyPrimeField<F> {
+    fn from_iter<T: IntoIterator<Item = &'a (usize, F)>>(iter: T) -> Self {
+        let mut inner = BTreeMap::new();
+        for (power, coeff) in iter {
+            match inner.entry(*power) {
+                Entry::Occupied(e) => {
+                    let new_coeff = *coeff + e.remove();
+                    if new_coeff != F::ZERO {
+                        inner.insert(*power, new_coeff);
+                    }
+                }
+                Entry::Vacant(e) => {
+                    if *coeff != F::ZERO {
+                        e.insert(*coeff);
+                    }
+                }
+            }
+        }
+        Self(inner)
+    }
+}
+
+impl<F: PrimeField> From<&[(usize, F)]> for SparsePolyPrimeField<F> {
+    fn from(value: &[(usize, F)]) -> Self {
+        SparsePolyPrimeField::from_iter(value)
+    }
+}
+
+impl<F: PrimeField> From<Vec<(usize, F)>> for SparsePolyPrimeField<F> {
+    fn from(value: Vec<(usize, F)>) -> Self {
+        Self::from(value.as_slice())
+    }
+}
+
+impl<F: PrimeField> From<&Vec<(usize, F)>> for SparsePolyPrimeField<F> {
+    fn from(value: &Vec<(usize, F)>) -> Self {
+        Self::from(value.as_slice())
+    }
+}
+
+impl<F: PrimeField> From<SparsePolyPrimeField<F>> for Vec<u8> {
+    fn from(value: SparsePolyPrimeField<F>) -> Self {
+        Self::from(&value)
+    }
+}
+
+impl<F: PrimeField> From<&SparsePolyPrimeField<F>> for Vec<u8> {
+    fn from(value: &SparsePolyPrimeField<F>) -> Self {
+        serde_bare::to_vec(value).expect("to serialize to bytes")
+    }
+}
+
+impl<F: PrimeField> TryFrom<Vec<u8>> for SparsePolyPrimeField<F> {
+    type Error = &'static str;
+
+    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_slice())
+    }
+}
+
+impl<F: PrimeField> TryFrom<&Vec<u8>> for SparsePolyPrimeField<F> {
+    type Error = &'static str;
+
+    fn try_from(value: &Vec<u8>) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_slice())
+    }
+}
+
+impl<F: PrimeField> TryFrom<&[u8]> for SparsePolyPrimeField<F> {
+    type Error = &'static str;
+
+    fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
+        let s = serde_bare::from_slice(value).map_err(|_e| "invalid bytes")?;
+        Ok(s)
+    }
+}
+
+impl<F: PrimeField> TryFrom<Box<[u8]>> for SparsePolyPrimeField<F> {
+    type Error = &'static str;
+
+    fn try_from(value: Box<[u8]>) -> Result<Self, Self::Error> {
+        Self::try_from(value.as_ref())
+    }
+}
+
 impl<F: PrimeField> Polynomial<F> for SparsePolyPrimeField<F> {
     type X = F;
     const ZERO: Self = Self(BTreeMap::new());
@@ -364,22 +539,11 @@ impl<F: PrimeField> Polynomial<F> for SparsePolyPrimeField<F> {
     }
 
     fn is_cyclotomic(&self) -> bool {
-        if self.0.len() != 2 {
-            return false;
-        }
-        if let Some(v) = self.0.get(&0) {
-            if *v != -F::ONE {
+        let m_one = -F::ONE;
+        for coeff in self.0.values() {
+            if (!(coeff.ct_eq(&m_one) | coeff.ct_eq(&F::ZERO))).into() {
                 return false;
             }
-        } else {
-            return false;
-        }
-        if let Some((_, v)) = self.0.last_key_value() {
-            if *v != F::ONE {
-                return false;
-            }
-        } else {
-            return false;
         }
         true
     }
