@@ -1,7 +1,8 @@
 [package]
 name = "lit-poly"
-version = "0.1.0"
 edition = "2021"
+license_file = "LICENSE"
+version = "0.1.0"
 
 [dependencies]
 elliptic-curve = { version = "0.13", features = ["arithmetic"] }

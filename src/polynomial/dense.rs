@@ -1,3 +1,7 @@
+/*
+    Copyright LIT Protocol . All Rights Reserved.
+    SPDX-License-Identifier: FSL-1.1
+*/
 use super::*;
 use elliptic_curve::PrimeField;
 use rayon::prelude::*;
