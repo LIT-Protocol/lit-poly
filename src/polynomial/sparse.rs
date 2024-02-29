@@ -270,6 +270,51 @@ impl<F: PrimeField> MulAssign<SparsePolyPrimeField<F>> for SparsePolyPrimeField<
     }
 }
 
+impl<F: PrimeField> Mul<&F> for &SparsePolyPrimeField<F> {
+    type Output = SparsePolyPrimeField<F>;
+    fn mul(self, rhs: &F) -> Self::Output {
+        self * *rhs
+    }
+}
+
+impl<F: PrimeField> Mul<F> for &SparsePolyPrimeField<F> {
+    type Output = SparsePolyPrimeField<F>;
+
+    fn mul(self, rhs: F) -> Self::Output {
+        let mut output = self.clone();
+        output *= rhs;
+        output
+    }
+}
+
+impl<F: PrimeField> Mul<&F> for SparsePolyPrimeField<F> {
+    type Output = Self;
+
+    fn mul(self, rhs: &F) -> Self::Output {
+        &self * *rhs
+    }
+}
+
+impl<F: PrimeField> Mul<F> for SparsePolyPrimeField<F> {
+    type Output = Self;
+
+    fn mul(self, rhs: F) -> Self::Output {
+        &self * rhs
+    }
+}
+
+impl<F: PrimeField> MulAssign<&F> for SparsePolyPrimeField<F> {
+    fn mul_assign(&mut self, rhs: &F) {
+        *self *= *rhs;
+    }
+}
+
+impl<F: PrimeField> MulAssign<F> for SparsePolyPrimeField<F> {
+    fn mul_assign(&mut self, rhs: F) {
+        self.0.iter_mut().for_each(|(_, coeff)| *coeff *= rhs);
+    }
+}
+
 impl<F: PrimeField> Serialize for SparsePolyPrimeField<F> {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         if s.is_human_readable() {
