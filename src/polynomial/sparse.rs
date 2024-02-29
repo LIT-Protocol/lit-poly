@@ -120,6 +120,52 @@ impl<F: PrimeField> AddAssign<SparsePolyPrimeField<F>> for SparsePolyPrimeField<
     }
 }
 
+impl<F: PrimeField> Add<&DensePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
+    type Output = SparsePolyPrimeField<F>;
+
+    fn add(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+        let mut output = self.clone();
+        output += rhs;
+        output
+    }
+}
+
+impl<F: PrimeField> Add<DensePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
+    type Output = SparsePolyPrimeField<F>;
+
+    fn add(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+        self + &rhs
+    }
+}
+
+impl<F: PrimeField> Add<&DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
+    type Output = Self;
+
+    fn add(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+        &self + rhs
+    }
+}
+
+impl<F: PrimeField> Add<DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
+    type Output = Self;
+
+    fn add(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+        &self + &rhs
+    }
+}
+
+impl<F: PrimeField> AddAssign<&DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
+    fn add_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+        *self += Self::from(rhs);
+    }
+}
+
+impl<F: PrimeField> AddAssign<DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
+    fn add_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+        *self += &rhs;
+    }
+}
+
 impl<F: PrimeField> Sub<&SparsePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
     type Output = SparsePolyPrimeField<F>;
 
@@ -315,38 +361,6 @@ impl<F: PrimeField> MulAssign<F> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Mul<&SparsePolyPrimeField<F>> for &F {
-    type Output = SparsePolyPrimeField<F>;
-
-    fn mul(self, rhs: &SparsePolyPrimeField<F>) -> Self::Output {
-        rhs * *self
-    }
-}
-
-impl<F: PrimeField> Mul<SparsePolyPrimeField<F>> for &F {
-    type Output = SparsePolyPrimeField<F>;
-
-    fn mul(self, rhs: SparsePolyPrimeField<F>) -> Self::Output {
-        &rhs * self
-    }
-}
-
-impl<F: PrimeField> Mul<&SparsePolyPrimeField<F>> for F {
-    type Output = SparsePolyPrimeField<F>;
-
-    fn mul(self, rhs: &SparsePolyPrimeField<F>) -> Self::Output {
-        rhs * self
-    }
-}
-
-impl<F: PrimeField> Mul<SparsePolyPrimeField<F>> for F {
-    type Output = SparsePolyPrimeField<F>;
-
-    fn mul(self, rhs: SparsePolyPrimeField<F>) -> Self::Output {
-        &rhs * self
-    }
-}
-
 impl<F: PrimeField> Serialize for SparsePolyPrimeField<F> {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         if s.is_human_readable() {
@@ -525,6 +539,18 @@ impl<'a, F: PrimeField> FromIterator<&'a (usize, F)> for SparsePolyPrimeField<F>
             }
         }
         Self(inner)
+    }
+}
+
+impl<F: PrimeField> From<&DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
+    fn from(value: &DensePolyPrimeField<F>) -> Self {
+        Self::from_iter(value.0.iter().enumerate())
+    }
+}
+
+impl<F: PrimeField> From<DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
+    fn from(value: DensePolyPrimeField<F>) -> Self {
+        Self::from(&value)
     }
 }
 

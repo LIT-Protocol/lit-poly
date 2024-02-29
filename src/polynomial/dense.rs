@@ -258,38 +258,6 @@ impl<F: PrimeField> MulAssign<F> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Mul<&DensePolyPrimeField<F>> for &F {
-    type Output = DensePolyPrimeField<F>;
-
-    fn mul(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
-        rhs * *self
-    }
-}
-
-impl<F: PrimeField> Mul<DensePolyPrimeField<F>> for &F {
-    type Output = DensePolyPrimeField<F>;
-
-    fn mul(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
-        &rhs * self
-    }
-}
-
-impl<F: PrimeField> Mul<&DensePolyPrimeField<F>> for F {
-    type Output = DensePolyPrimeField<F>;
-
-    fn mul(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
-        rhs * self
-    }
-}
-
-impl<F: PrimeField> Mul<DensePolyPrimeField<F>> for F {
-    type Output = DensePolyPrimeField<F>;
-
-    fn mul(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
-        &rhs * self
-    }
-}
-
 impl<F: PrimeField> Serialize for DensePolyPrimeField<F> {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         if s.is_human_readable() {
