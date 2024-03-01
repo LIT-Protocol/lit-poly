@@ -443,61 +443,6 @@ impl<F: PrimeField> FromIterator<F> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> DensePolyPrimeField<F> {
-    fn poly_mod_cyclotomic(&self, degree: usize) -> (Self, Self) {
-        if self.0.len() <= degree {
-            return (Self::ZERO, self.clone());
-        }
-
-        let mut remainder = self.clone();
-        let mut div = Vec::with_capacity(self.0.len() - degree);
-        (degree..self.0.len()).rev().for_each(|i| {
-            remainder.0[i - degree] += self.0[i];
-            div.push(self.0[i]);
-        });
-        (
-            Self(div.into_par_iter().rev().collect()),
-            Self(remainder.0.into_par_iter().take(degree).collect()),
-        )
-    }
-
-    /// Get the polynomial coefficients
-    pub fn coefficients(&self) -> &[F] {
-        self.0.as_slice()
-    }
-
-    /// Get a mutable reference to the polynomial coefficients
-    pub fn coefficients_mut(&mut self) -> &mut [F] {
-        self.0.as_mut_slice()
-    }
-
-    /// Create a polynomial given the coefficients
-    pub fn from_coefficients<B: AsRef<[F]>>(coefficients: B) -> Self {
-        let mut out = Self(coefficients.as_ref().to_vec());
-        out.trim();
-        out
-    }
-
-    /// Randomly create a polynomial with the specified degree
-    pub fn random(degree: usize, mut rng: impl RngCore) -> Self {
-        let mut coeffs = Vec::with_capacity(degree);
-        for _ in 0..=degree {
-            coeffs.push(F::random(&mut rng));
-        }
-        Self::from_coefficients(coeffs)
-    }
-
-    /// Remove leading coefficients that are zero
-    pub fn trim(&mut self) {
-        for i in (0..self.0.len()).rev() {
-            if !bool::from(self.0[i].is_zero()) {
-                self.0.truncate(i + 1);
-                return;
-            }
-        }
-    }
-}
-
 impl<F: PrimeField> From<DensePolyPrimeField<F>> for Vec<u8> {
     fn from(p: DensePolyPrimeField<F>) -> Self {
         Self::from(&p)
@@ -552,6 +497,70 @@ impl<F: PrimeField> TryFrom<Box<[u8]>> for DensePolyPrimeField<F> {
 
     fn try_from(value: Box<[u8]>) -> Result<Self, Self::Error> {
         Self::try_from(value.as_ref())
+    }
+}
+
+impl<F: PrimeField> DensePolyPrimeField<F> {
+    fn poly_mod_cyclotomic(&self, degree: usize) -> (Self, Self) {
+        if self.0.len() <= degree {
+            return (Self::ZERO, self.clone());
+        }
+
+        let mut remainder = self.clone();
+        let mut div = Vec::with_capacity(self.0.len() - degree);
+        (degree..self.0.len()).rev().for_each(|i| {
+            remainder.0[i - degree] += self.0[i];
+            div.push(self.0[i]);
+        });
+        (
+            Self(div.into_par_iter().rev().collect()),
+            Self(remainder.0.into_par_iter().take(degree).collect()),
+        )
+    }
+
+    /// Get the polynomial coefficients
+    pub fn coefficients(&self) -> &[F] {
+        self.0.as_slice()
+    }
+
+    /// Get a mutable reference to the polynomial coefficients
+    pub fn coefficients_mut(&mut self) -> &mut [F] {
+        self.0.as_mut_slice()
+    }
+
+    /// Create a polynomial given the coefficients
+    pub fn from_coefficients<B: AsRef<[F]>>(coefficients: B) -> Self {
+        let mut out = Self(coefficients.as_ref().to_vec());
+        out.trim();
+        out
+    }
+
+    /// Randomly create a polynomial with the specified degree
+    pub fn random(degree: usize, mut rng: impl RngCore) -> Self {
+        let mut coeffs = Vec::with_capacity(degree);
+        for _ in 0..=degree {
+            coeffs.push(F::random(&mut rng));
+        }
+        Self::from_coefficients(coeffs)
+    }
+
+    /// Remove leading coefficients that are zero
+    pub fn trim(&mut self) {
+        for i in (0..self.0.len()).rev() {
+            if !bool::from(self.0[i].is_zero()) {
+                self.0.truncate(i + 1);
+                return;
+            }
+        }
+    }
+
+    /// Compute the dot product of the two polynomials
+    pub fn dot_product(&self, other: &Self) -> F {
+        self.0
+            .iter()
+            .zip(other.0.iter())
+            .map(|(a, b)| *a * *b)
+            .sum()
     }
 }
 
@@ -705,5 +714,25 @@ mod tests {
         for i in 5..8 {
             assert_eq!(c.0[i], -b.0[i]);
         }
+    }
+
+    #[test]
+    fn dot_product() {
+        let a = DensePolyPrimeField(vec![
+            k256::Scalar::from(5u64),
+            k256::Scalar::from(10u64),
+            k256::Scalar::from(20u64),
+        ]);
+        let b = DensePolyPrimeField(vec![
+            k256::Scalar::from(2u64),
+            k256::Scalar::from(4u64),
+            k256::Scalar::from(8u64),
+        ]);
+
+        let c = a.dot_product(&b);
+        let expected = k256::Scalar::from(5u64) * k256::Scalar::from(2u64)
+            + k256::Scalar::from(10u64) * k256::Scalar::from(4u64)
+            + k256::Scalar::from(20u64) * k256::Scalar::from(8u64);
+        assert_eq!(c, expected);
     }
 }

@@ -716,6 +716,14 @@ impl<F: PrimeField> SparsePolyPrimeField<F> {
         }
         Self(coeffs)
     }
+
+    /// Compute the dot product of the two polynomials
+    pub fn dot_product(&self, other: &Self) -> F {
+        self.0
+            .iter()
+            .map(|(power, c)| other.0.get(power).map(|c2| *c * *c2).unwrap_or(F::ZERO))
+            .sum()
+    }
 }
 
 #[cfg(test)]
@@ -808,5 +816,25 @@ mod tests {
         let div_b = &div * &b;
         let div_b_pr = &div_b + &rem;
         assert_eq!(a, div_b_pr);
+    }
+
+    #[test]
+    fn dot_product() {
+        let a = SparsePolyPrimeField(maplit::btreemap! {
+            1 => k256::Scalar::from(2u32),
+            2 => k256::Scalar::from(3u32),
+            3 => k256::Scalar::from(4u32),
+            6 => k256::Scalar::from(10u32),
+        });
+        let b = SparsePolyPrimeField(maplit::btreemap! {
+            1 => k256::Scalar::from(2u32),
+            3 => k256::Scalar::from(3u32),
+            4 => k256::Scalar::from(4u32),
+            5 => k256::Scalar::from(10u32),
+        });
+        let c = a.dot_product(&b);
+        let expected = k256::Scalar::from(2u32) * k256::Scalar::from(2u32)
+            + k256::Scalar::from(3u32) * k256::Scalar::from(4u32);
+        assert_eq!(c, expected);
     }
 }
