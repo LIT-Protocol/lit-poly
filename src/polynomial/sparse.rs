@@ -366,7 +366,7 @@ impl<F: PrimeField> Serialize for SparsePolyPrimeField<F> {
         if s.is_human_readable() {
             self.0
                 .iter()
-                .map(|(power, c)| (hex::encode(c.to_repr().as_ref()), power.to_string()))
+                .map(|(power, c)| (power.to_string(), hex::encode(c.to_repr().as_ref())))
                 .collect::<Vec<_>>()
                 .serialize(s)
         } else {
@@ -416,14 +416,14 @@ impl<'de, F: PrimeField> Deserialize<'de> for SparsePolyPrimeField<F> {
                 let c = Option::<F>::from(F::from_repr(repr))
                     .ok_or(E::custom("Invalid field bytes"))?;
                 let power = u64::from_be_bytes([
-                    bytes[len - 8],
-                    bytes[len - 7],
-                    bytes[len - 6],
-                    bytes[len - 5],
-                    bytes[len - 4],
-                    bytes[len - 3],
-                    bytes[len - 2],
-                    bytes[len - 1],
+                    bytes[len],
+                    bytes[len + 1],
+                    bytes[len + 2],
+                    bytes[len + 3],
+                    bytes[len + 4],
+                    bytes[len + 5],
+                    bytes[len + 6],
+                    bytes[len + 7],
                 ]) as usize;
                 result.0.insert(power, c);
             }
