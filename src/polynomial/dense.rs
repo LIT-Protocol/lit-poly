@@ -258,6 +258,96 @@ impl<F: PrimeField> MulAssign<F> for DensePolyPrimeField<F> {
     }
 }
 
+impl<F: PrimeField> Div<&DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
+    type Output = DensePolyPrimeField<F>;
+
+    fn div(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+        let (quotient, _) = self.poly_mod(rhs);
+        quotient
+    }
+}
+
+impl<F: PrimeField> Div<DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
+    type Output = DensePolyPrimeField<F>;
+
+    fn div(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+        self / &rhs
+    }
+}
+
+impl<F: PrimeField> Div<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
+    type Output = DensePolyPrimeField<F>;
+
+    fn div(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+        &self / rhs
+    }
+}
+
+impl<F: PrimeField> Div for DensePolyPrimeField<F> {
+    type Output = Self;
+
+    fn div(self, rhs: Self) -> Self::Output {
+        &self / &rhs
+    }
+}
+
+impl<F: PrimeField> DivAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
+    fn div_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+        *self = &*self / rhs;
+    }
+}
+
+impl<F: PrimeField> DivAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
+    fn div_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+        *self = &*self / &rhs;
+    }
+}
+
+impl<F: PrimeField> Rem<&DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
+    type Output = DensePolyPrimeField<F>;
+
+    fn rem(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+        let (_, remainder) = self.poly_mod(rhs);
+        remainder
+    }
+}
+
+impl<F: PrimeField> Rem<DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
+    type Output = DensePolyPrimeField<F>;
+
+    fn rem(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+        self % &rhs
+    }
+}
+
+impl<F: PrimeField> Rem<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
+    type Output = DensePolyPrimeField<F>;
+
+    fn rem(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+        &self % rhs
+    }
+}
+
+impl<F: PrimeField> Rem for DensePolyPrimeField<F> {
+    type Output = Self;
+
+    fn rem(self, rhs: Self) -> Self::Output {
+        &self % &rhs
+    }
+}
+
+impl<F: PrimeField> RemAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
+    fn rem_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+        *self = &*self % rhs;
+    }
+}
+
+impl<F: PrimeField> RemAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
+    fn rem_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+        *self = &*self % &rhs;
+    }
+}
+
 impl<F: PrimeField> Serialize for DensePolyPrimeField<F> {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         if s.is_human_readable() {
