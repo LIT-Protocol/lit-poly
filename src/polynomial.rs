@@ -112,7 +112,7 @@ pub(crate) fn mul_poly<F: PrimeField>(lhs: &mut Vec<F>, rhs: &[F]) {
         for i in &mut *lhs {
             *i = F::ZERO;
         }
-        // M + N + 1
+        // M + N
         lhs.resize_with(lhs.len() + rhs.len(), || F::ZERO);
 
         // Calculate product

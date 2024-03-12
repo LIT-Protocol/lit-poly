@@ -452,34 +452,23 @@ impl<F: PrimeField> Polynomial<F> for DensePolyPrimeField<F> {
     }
 
     fn is_cyclotomic(&self) -> bool {
-        let one = F::ONE;
-        let m_one = -one;
-        let mut seen_one = false;
-        if self.0[0] != m_one {
-            return false;
-        }
-        for i in 1..self.0.len() {
-            if self.0[i] != F::ZERO {
-                if self.0[i] != one {
-                    return false;
-                }
-                if seen_one {
-                    return false;
-                }
-                seen_one = true;
+        let m_one = -F::ONE;
+        for coeff in self.0.values() {
+            if (!(coeff.ct_eq(&m_one) | coeff.ct_eq(&F::ZERO))).into() {
+                return false;
             }
         }
         true
     }
 
     fn poly_mod(&self, m: &Self) -> (Self, Self) {
-        if m.is_cyclotomic() {
-            let degree =
-                m.0.iter()
-                    .rposition(|c| bool::from(!c.is_zero()))
-                    .expect("m is cyclotomic");
-            return self.poly_mod_cyclotomic(degree);
-        }
+        // if m.is_cyclotomic() {
+        //     let degree =
+        //         m.0.iter()
+        //             .rposition(|c| bool::from(!c.is_zero()))
+        //             .expect("m is cyclotomic");
+        //     return self.poly_mod_cyclotomic(degree);
+        // }
         let self_degree = self.degree();
         let m_degree = m.degree();
         let mut self_trimmed = self.clone();
@@ -489,7 +478,7 @@ impl<F: PrimeField> Polynomial<F> for DensePolyPrimeField<F> {
         }
         debug_assert!(m_degree > 0);
 
-        let largest_coeff_inv = m.0[m_degree].invert().unwrap();
+        let largest_coeff_inv = m.0[m_degree].invert().expect("should not be zero");
         let mut coefficients = vec![F::ZERO; self_degree - m_degree + 1];
         let mut remainder = Self(self_trimmed.0.clone());
 
