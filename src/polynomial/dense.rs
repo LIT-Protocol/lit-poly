@@ -453,7 +453,7 @@ impl<F: PrimeField> Polynomial<F> for DensePolyPrimeField<F> {
 
     fn is_cyclotomic(&self) -> bool {
         let m_one = -F::ONE;
-        for coeff in self.0.values() {
+        for coeff in &self.0 {
             if (!(coeff.ct_eq(&m_one) | coeff.ct_eq(&F::ZERO))).into() {
                 return false;
             }
@@ -462,13 +462,13 @@ impl<F: PrimeField> Polynomial<F> for DensePolyPrimeField<F> {
     }
 
     fn poly_mod(&self, m: &Self) -> (Self, Self) {
-        // if m.is_cyclotomic() {
-        //     let degree =
-        //         m.0.iter()
-        //             .rposition(|c| bool::from(!c.is_zero()))
-        //             .expect("m is cyclotomic");
-        //     return self.poly_mod_cyclotomic(degree);
-        // }
+        if m.is_cyclotomic() {
+            let degree =
+                m.0.iter()
+                    .rposition(|c| bool::from(!c.is_zero()))
+                    .expect("m is cyclotomic");
+            return self.poly_mod_cyclotomic(degree);
+        }
         let self_degree = self.degree();
         let m_degree = m.degree();
         let mut self_trimmed = self.clone();
