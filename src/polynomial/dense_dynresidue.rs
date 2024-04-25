@@ -11,28 +11,28 @@ use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
 /// A polynomial over big integers with a custom modulus
 #[derive(Clone, PartialEq, Eq)]
-pub struct DensePolyDynResidue<const N: usize>(
+pub struct DenseDynResidue<const N: usize>(
     /// The coefficients of the polynomial
     pub Vec<DynResidue<N>>,
 );
 
-unsafe impl<const N: usize> Send for DensePolyDynResidue<N> {}
+unsafe impl<const N: usize> Send for DenseDynResidue<N> {}
 
-unsafe impl<const N: usize> Sync for DensePolyDynResidue<N> {}
+unsafe impl<const N: usize> Sync for DenseDynResidue<N> {}
 
-impl<const N: usize> Default for DensePolyDynResidue<N> {
+impl<const N: usize> Default for DenseDynResidue<N> {
     fn default() -> Self {
         Self(Vec::default())
     }
 }
 
-impl<const N: usize> Debug for DensePolyDynResidue<N> {
+impl<const N: usize> Debug for DenseDynResidue<N> {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         write!(f, "DensePolyDynResidue({:?})", self.0)
     }
 }
 
-impl<const N: usize> Display for DensePolyDynResidue<N>
+impl<const N: usize> Display for DenseDynResidue<N>
 where
     Uint<N>: Encoding,
 {
@@ -55,100 +55,100 @@ where
     }
 }
 
-impl<const N: usize> Add<&DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Add<&DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn add(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn add(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         let mut output = self.clone();
         add_poly(&mut output.0, &rhs.0);
         output
     }
 }
 
-impl<const N: usize> Add<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Add<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn add(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn add(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         &self + rhs
     }
 }
 
-impl<const N: usize> Add<DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Add<DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn add(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn add(self, rhs: DenseDynResidue<N>) -> Self::Output {
         self + &rhs
     }
 }
 
-impl<const N: usize> Add for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Add for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn add(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn add(self, rhs: DenseDynResidue<N>) -> Self::Output {
         &self + &rhs
     }
 }
 
-impl<const N: usize> AddAssign<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    fn add_assign(&mut self, rhs: &DensePolyDynResidue<N>) {
+impl<const N: usize> AddAssign<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    fn add_assign(&mut self, rhs: &DenseDynResidue<N>) {
         add_poly(&mut self.0, &rhs.0);
     }
 }
 
-impl<const N: usize> AddAssign for DensePolyDynResidue<N> {
-    fn add_assign(&mut self, rhs: DensePolyDynResidue<N>) {
+impl<const N: usize> AddAssign for DenseDynResidue<N> {
+    fn add_assign(&mut self, rhs: DenseDynResidue<N>) {
         add_poly(&mut self.0, &rhs.0);
     }
 }
 
-impl<const N: usize> Sub<&DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Sub<&DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn sub(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn sub(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         let mut output = self.clone();
         sub_poly(&mut output.0, &rhs.0);
         output
     }
 }
 
-impl<const N: usize> Sub<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Sub<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn sub(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn sub(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         &self - rhs
     }
 }
 
-impl<const N: usize> Sub<DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Sub<DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn sub(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn sub(self, rhs: DenseDynResidue<N>) -> Self::Output {
         self - &rhs
     }
 }
 
-impl<const N: usize> Sub for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Sub for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn sub(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn sub(self, rhs: DenseDynResidue<N>) -> Self::Output {
         &self - &rhs
     }
 }
 
-impl<const N: usize> SubAssign<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    fn sub_assign(&mut self, rhs: &DensePolyDynResidue<N>) {
+impl<const N: usize> SubAssign<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    fn sub_assign(&mut self, rhs: &DenseDynResidue<N>) {
         sub_poly(&mut self.0, &rhs.0);
     }
 }
 
-impl<const N: usize> SubAssign for DensePolyDynResidue<N> {
-    fn sub_assign(&mut self, rhs: DensePolyDynResidue<N>) {
+impl<const N: usize> SubAssign for DenseDynResidue<N> {
+    fn sub_assign(&mut self, rhs: DenseDynResidue<N>) {
         sub_poly(&mut self.0, &rhs.0);
     }
 }
 
-impl<const N: usize> Neg for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Neg for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn neg(self) -> Self::Output {
         let mut output = self.clone();
@@ -157,19 +157,19 @@ impl<const N: usize> Neg for &DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> Neg for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Neg for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn neg(self) -> Self::Output {
         -&self
     }
 }
 
-impl<const N: usize> Mul<&DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<&DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn mul(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
-        let mut output = DensePolyDynResidue::default();
+    fn mul(self, rhs: &DenseDynResidue<N>) -> Self::Output {
+        let mut output = DenseDynResidue::default();
         mul_poly(
             &mut output.0,
             &rhs.0,
@@ -179,32 +179,32 @@ impl<const N: usize> Mul<&DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> Mul<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn mul(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn mul(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         &self * rhs
     }
 }
 
-impl<const N: usize> Mul<DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn mul(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn mul(self, rhs: DenseDynResidue<N>) -> Self::Output {
         self * &rhs
     }
 }
 
-impl<const N: usize> Mul for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn mul(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn mul(self, rhs: DenseDynResidue<N>) -> Self::Output {
         &self * &rhs
     }
 }
 
-impl<const N: usize> MulAssign<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    fn mul_assign(&mut self, rhs: &DensePolyDynResidue<N>) {
+impl<const N: usize> MulAssign<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    fn mul_assign(&mut self, rhs: &DenseDynResidue<N>) {
         mul_poly(
             &mut self.0,
             &rhs.0,
@@ -213,8 +213,8 @@ impl<const N: usize> MulAssign<&DensePolyDynResidue<N>> for DensePolyDynResidue<
     }
 }
 
-impl<const N: usize> MulAssign for DensePolyDynResidue<N> {
-    fn mul_assign(&mut self, rhs: DensePolyDynResidue<N>) {
+impl<const N: usize> MulAssign for DenseDynResidue<N> {
+    fn mul_assign(&mut self, rhs: DenseDynResidue<N>) {
         mul_poly(
             &mut self.0,
             &rhs.0,
@@ -223,16 +223,16 @@ impl<const N: usize> MulAssign for DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> Mul<&DynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<&DynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn mul(self, rhs: &DynResidue<N>) -> Self::Output {
         self * *rhs
     }
 }
 
-impl<const N: usize> Mul<DynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<DynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn mul(self, rhs: DynResidue<N>) -> Self::Output {
         let mut output = self.clone();
@@ -241,16 +241,16 @@ impl<const N: usize> Mul<DynResidue<N>> for &DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> Mul<&DynResidue<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<&DynResidue<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn mul(self, rhs: &DynResidue<N>) -> Self::Output {
         &self * rhs
     }
 }
 
-impl<const N: usize> Mul<DynResidue<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<DynResidue<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn mul(self, rhs: DynResidue<N>) -> Self::Output {
         let mut output = self.clone();
@@ -259,20 +259,20 @@ impl<const N: usize> Mul<DynResidue<N>> for DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> MulAssign<&DynResidue<N>> for DensePolyDynResidue<N> {
+impl<const N: usize> MulAssign<&DynResidue<N>> for DenseDynResidue<N> {
     fn mul_assign(&mut self, rhs: &DynResidue<N>) {
         self.0.par_iter_mut().for_each(|c| *c = *c * rhs);
     }
 }
 
-impl<const N: usize> MulAssign<DynResidue<N>> for DensePolyDynResidue<N> {
+impl<const N: usize> MulAssign<DynResidue<N>> for DenseDynResidue<N> {
     fn mul_assign(&mut self, rhs: DynResidue<N>) {
         self.0.par_iter_mut().for_each(|c| *c = *c * rhs);
     }
 }
 
-impl<const N: usize> Mul<&Uint<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<&Uint<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn mul(self, rhs: &Uint<N>) -> Self::Output {
         let mut output = self.clone();
@@ -281,136 +281,136 @@ impl<const N: usize> Mul<&Uint<N>> for &DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> Mul<Uint<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<Uint<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn mul(self, rhs: Uint<N>) -> Self::Output {
         self * &rhs
     }
 }
 
-impl<const N: usize> Mul<&Uint<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<&Uint<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn mul(self, rhs: &Uint<N>) -> Self::Output {
         &self * rhs
     }
 }
 
-impl<const N: usize> Mul<Uint<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Mul<Uint<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
     fn mul(self, rhs: Uint<N>) -> Self::Output {
         &self * rhs
     }
 }
 
-impl<const N: usize> MulAssign<&Uint<N>> for DensePolyDynResidue<N> {
+impl<const N: usize> MulAssign<&Uint<N>> for DenseDynResidue<N> {
     fn mul_assign(&mut self, rhs: &Uint<N>) {
         let r = DynResidue::new(rhs, *self.0[0].params());
         self.0.par_iter_mut().for_each(|c| *c = *c * r);
     }
 }
 
-impl<const N: usize> MulAssign<Uint<N>> for DensePolyDynResidue<N> {
+impl<const N: usize> MulAssign<Uint<N>> for DenseDynResidue<N> {
     fn mul_assign(&mut self, rhs: Uint<N>) {
         *self *= &rhs;
     }
 }
 
-impl<const N: usize> Div<&DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Div<&DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn div(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn div(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         let (quotient, _) = self.poly_mod(rhs);
         quotient
     }
 }
 
-impl<const N: usize> Div<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Div<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn div(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn div(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         &self / rhs
     }
 }
 
-impl<const N: usize> Div<DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Div<DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn div(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn div(self, rhs: DenseDynResidue<N>) -> Self::Output {
         self / &rhs
     }
 }
 
-impl<const N: usize> Div for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Div for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn div(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn div(self, rhs: DenseDynResidue<N>) -> Self::Output {
         &self / &rhs
     }
 }
 
-impl<const N: usize> DivAssign<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    fn div_assign(&mut self, rhs: &DensePolyDynResidue<N>) {
+impl<const N: usize> DivAssign<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    fn div_assign(&mut self, rhs: &DenseDynResidue<N>) {
         let (quotient, _) = self.poly_mod(rhs);
         *self = quotient;
     }
 }
 
-impl<const N: usize> DivAssign for DensePolyDynResidue<N> {
+impl<const N: usize> DivAssign for DenseDynResidue<N> {
     fn div_assign(&mut self, rhs: Self) {
         *self /= &rhs;
     }
 }
 
-impl<const N: usize> Rem<&DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Rem<&DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn rem(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn rem(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         let (_, remainder) = self.poly_mod(rhs);
         remainder
     }
 }
 
-impl<const N: usize> Rem<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Rem<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn rem(self, rhs: &DensePolyDynResidue<N>) -> Self::Output {
+    fn rem(self, rhs: &DenseDynResidue<N>) -> Self::Output {
         &self % rhs
     }
 }
 
-impl<const N: usize> Rem<DensePolyDynResidue<N>> for &DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Rem<DenseDynResidue<N>> for &DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn rem(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn rem(self, rhs: DenseDynResidue<N>) -> Self::Output {
         self % &rhs
     }
 }
 
-impl<const N: usize> Rem for DensePolyDynResidue<N> {
-    type Output = DensePolyDynResidue<N>;
+impl<const N: usize> Rem for DenseDynResidue<N> {
+    type Output = DenseDynResidue<N>;
 
-    fn rem(self, rhs: DensePolyDynResidue<N>) -> Self::Output {
+    fn rem(self, rhs: DenseDynResidue<N>) -> Self::Output {
         &self % &rhs
     }
 }
 
-impl<const N: usize> RemAssign<&DensePolyDynResidue<N>> for DensePolyDynResidue<N> {
-    fn rem_assign(&mut self, rhs: &DensePolyDynResidue<N>) {
+impl<const N: usize> RemAssign<&DenseDynResidue<N>> for DenseDynResidue<N> {
+    fn rem_assign(&mut self, rhs: &DenseDynResidue<N>) {
         let (_, remainder) = self.poly_mod(rhs);
         *self = remainder;
     }
 }
 
-impl<const N: usize> RemAssign for DensePolyDynResidue<N> {
-    fn rem_assign(&mut self, rhs: DensePolyDynResidue<N>) {
+impl<const N: usize> RemAssign for DenseDynResidue<N> {
+    fn rem_assign(&mut self, rhs: DenseDynResidue<N>) {
         *self %= &rhs;
     }
 }
 
-impl<const N: usize> Serialize for DensePolyDynResidue<N>
+impl<const N: usize> Serialize for DenseDynResidue<N>
 where
     Uint<N>: Encoding,
 {
@@ -425,7 +425,7 @@ where
     }
 }
 
-impl<'de, const N: usize> Deserialize<'de> for DensePolyDynResidue<N>
+impl<'de, const N: usize> Deserialize<'de> for DenseDynResidue<N>
 where
     Uint<N>: Encoding,
 {
@@ -445,26 +445,26 @@ where
     }
 }
 
-impl<const N: usize> FromIterator<DynResidue<N>> for DensePolyDynResidue<N> {
+impl<const N: usize> FromIterator<DynResidue<N>> for DenseDynResidue<N> {
     fn from_iter<T: IntoIterator<Item = DynResidue<N>>>(iter: T) -> Self {
         Self(Vec::from_iter(iter))
     }
 }
 
-impl<const N: usize> From<DensePolyDynResidue<N>> for Vec<u8>
+impl<const N: usize> From<DenseDynResidue<N>> for Vec<u8>
 where
     Uint<N>: Encoding,
 {
-    fn from(value: DensePolyDynResidue<N>) -> Self {
+    fn from(value: DenseDynResidue<N>) -> Self {
         Self::from(&value)
     }
 }
 
-impl<const N: usize> From<&DensePolyDynResidue<N>> for Vec<u8>
+impl<const N: usize> From<&DenseDynResidue<N>> for Vec<u8>
 where
     Uint<N>: Encoding,
 {
-    fn from(value: &DensePolyDynResidue<N>) -> Self {
+    fn from(value: &DenseDynResidue<N>) -> Self {
         let mut bytes = vec![];
         bytes.extend_from_slice(value.0[0].params().modulus().to_be_bytes().as_ref());
         for c in &value.0 {
@@ -474,7 +474,7 @@ where
     }
 }
 
-impl<const N: usize> TryFrom<Vec<u8>> for DensePolyDynResidue<N> {
+impl<const N: usize> TryFrom<Vec<u8>> for DenseDynResidue<N> {
     type Error = &'static str;
 
     fn try_from(bytes: Vec<u8>) -> Result<Self, Self::Error> {
@@ -482,7 +482,7 @@ impl<const N: usize> TryFrom<Vec<u8>> for DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> TryFrom<&Vec<u8>> for DensePolyDynResidue<N> {
+impl<const N: usize> TryFrom<&Vec<u8>> for DenseDynResidue<N> {
     type Error = &'static str;
 
     fn try_from(bytes: &Vec<u8>) -> Result<Self, Self::Error> {
@@ -490,7 +490,7 @@ impl<const N: usize> TryFrom<&Vec<u8>> for DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> TryFrom<&[u8]> for DensePolyDynResidue<N> {
+impl<const N: usize> TryFrom<&[u8]> for DenseDynResidue<N> {
     type Error = &'static str;
 
     fn try_from(bytes: &[u8]) -> Result<Self, Self::Error> {
@@ -512,7 +512,7 @@ impl<const N: usize> TryFrom<&[u8]> for DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> TryFrom<Box<[u8]>> for DensePolyDynResidue<N> {
+impl<const N: usize> TryFrom<Box<[u8]>> for DenseDynResidue<N> {
     type Error = &'static str;
 
     fn try_from(bytes: Box<[u8]>) -> Result<Self, Self::Error> {
@@ -520,7 +520,7 @@ impl<const N: usize> TryFrom<Box<[u8]>> for DensePolyDynResidue<N> {
     }
 }
 
-impl<const N: usize> DensePolyDynResidue<N> {
+impl<const N: usize> DenseDynResidue<N> {
     pub const ZERO: Self = Self(Vec::new());
 
     pub fn is_zero(&self) -> bool {

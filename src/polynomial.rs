@@ -2,13 +2,13 @@
     Copyright LIT Protocol . All Rights Reserved.
     SPDX-License-Identifier: FSL-1.1
 */
-mod dense_polydynresidue;
+mod dense_dynresidue;
 mod dense_primefield;
 mod sparse;
 
-pub use dense_primefield::DensePolyPrimeField;
-pub use dense_polydynresidue::DensePolyDynResidue;
-pub use sparse::SparsePolyPrimeField;
+pub use dense_primefield::DensePrimeField;
+pub use dense_dynresidue::DenseDynResidue;
+pub use sparse::SparsePrimeField;
 
 use rand::RngCore;
 use serde::{Deserialize, Serialize};

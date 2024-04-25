@@ -11,28 +11,28 @@ use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 
 /// A sparse polynomial over a prime field.
 #[derive(Clone, PartialEq, Eq)]
-pub struct SparsePolyPrimeField<F: PrimeField>(
+pub struct SparsePrimeField<F: PrimeField>(
     /// The coefficients and the powers of the polynomial
     pub BTreeMap<usize, F>,
 );
 
-unsafe impl<F: PrimeField> Send for SparsePolyPrimeField<F> {}
+unsafe impl<F: PrimeField> Send for SparsePrimeField<F> {}
 
-unsafe impl<F: PrimeField> Sync for SparsePolyPrimeField<F> {}
+unsafe impl<F: PrimeField> Sync for SparsePrimeField<F> {}
 
-impl<F: PrimeField> Default for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Default for SparsePrimeField<F> {
     fn default() -> Self {
         Self(BTreeMap::new())
     }
 }
 
-impl<F: PrimeField> Debug for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Debug for SparsePrimeField<F> {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         write!(f, "SparsePolyPrimeField({:?})", self.0)
     }
 }
 
-impl<F: PrimeField> Display for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Display for SparsePrimeField<F> {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         let vals = self
             .0
@@ -60,33 +60,33 @@ impl<F: PrimeField> Display for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Add<&SparsePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Add<&SparsePrimeField<F>> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn add(self, rhs: &SparsePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: &SparsePrimeField<F>) -> Self::Output {
         let mut output = self.clone();
         output += rhs;
         output
     }
 }
 
-impl<F: PrimeField> Add<&SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Add<&SparsePrimeField<F>> for SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn add(self, rhs: &SparsePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: &SparsePrimeField<F>) -> Self::Output {
         &self + rhs
     }
 }
 
-impl<F: PrimeField> Add<SparsePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Add<SparsePrimeField<F>> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn add(self, rhs: SparsePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: SparsePrimeField<F>) -> Self::Output {
         self + &rhs
     }
 }
 
-impl<F: PrimeField> Add for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Add for SparsePrimeField<F> {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -94,8 +94,8 @@ impl<F: PrimeField> Add for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> AddAssign<&SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn add_assign(&mut self, rhs: &SparsePolyPrimeField<F>) {
+impl<F: PrimeField> AddAssign<&SparsePrimeField<F>> for SparsePrimeField<F> {
+    fn add_assign(&mut self, rhs: &SparsePrimeField<F>) {
         for (exp, coeff) in &rhs.0 {
             match self.0.entry(*exp) {
                 Entry::Occupied(e) => {
@@ -114,85 +114,85 @@ impl<F: PrimeField> AddAssign<&SparsePolyPrimeField<F>> for SparsePolyPrimeField
     }
 }
 
-impl<F: PrimeField> AddAssign<SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn add_assign(&mut self, rhs: SparsePolyPrimeField<F>) {
+impl<F: PrimeField> AddAssign<SparsePrimeField<F>> for SparsePrimeField<F> {
+    fn add_assign(&mut self, rhs: SparsePrimeField<F>) {
         *self += &rhs;
     }
 }
 
-impl<F: PrimeField> Add<&DensePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Add<&DensePrimeField<F>> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn add(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: &DensePrimeField<F>) -> Self::Output {
         let mut output = self.clone();
         output += rhs;
         output
     }
 }
 
-impl<F: PrimeField> Add<DensePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Add<DensePrimeField<F>> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn add(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: DensePrimeField<F>) -> Self::Output {
         self + &rhs
     }
 }
 
-impl<F: PrimeField> Add<&DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Add<&DensePrimeField<F>> for SparsePrimeField<F> {
     type Output = Self;
 
-    fn add(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: &DensePrimeField<F>) -> Self::Output {
         &self + rhs
     }
 }
 
-impl<F: PrimeField> Add<DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Add<DensePrimeField<F>> for SparsePrimeField<F> {
     type Output = Self;
 
-    fn add(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: DensePrimeField<F>) -> Self::Output {
         &self + &rhs
     }
 }
 
-impl<F: PrimeField> AddAssign<&DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn add_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+impl<F: PrimeField> AddAssign<&DensePrimeField<F>> for SparsePrimeField<F> {
+    fn add_assign(&mut self, rhs: &DensePrimeField<F>) {
         *self += Self::from(rhs);
     }
 }
 
-impl<F: PrimeField> AddAssign<DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn add_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+impl<F: PrimeField> AddAssign<DensePrimeField<F>> for SparsePrimeField<F> {
+    fn add_assign(&mut self, rhs: DensePrimeField<F>) {
         *self += &rhs;
     }
 }
 
-impl<F: PrimeField> Sub<&SparsePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Sub<&SparsePrimeField<F>> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn sub(self, rhs: &SparsePolyPrimeField<F>) -> Self::Output {
+    fn sub(self, rhs: &SparsePrimeField<F>) -> Self::Output {
         let mut output = self.clone();
         output -= rhs;
         output
     }
 }
 
-impl<F: PrimeField> Sub<&SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Sub<&SparsePrimeField<F>> for SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn sub(self, rhs: &SparsePolyPrimeField<F>) -> Self::Output {
+    fn sub(self, rhs: &SparsePrimeField<F>) -> Self::Output {
         &self - rhs
     }
 }
 
-impl<F: PrimeField> Sub<SparsePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Sub<SparsePrimeField<F>> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn sub(self, rhs: SparsePolyPrimeField<F>) -> Self::Output {
+    fn sub(self, rhs: SparsePrimeField<F>) -> Self::Output {
         self - &rhs
     }
 }
 
-impl<F: PrimeField> Sub for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Sub for SparsePrimeField<F> {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
@@ -200,8 +200,8 @@ impl<F: PrimeField> Sub for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> SubAssign<&SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn sub_assign(&mut self, rhs: &SparsePolyPrimeField<F>) {
+impl<F: PrimeField> SubAssign<&SparsePrimeField<F>> for SparsePrimeField<F> {
+    fn sub_assign(&mut self, rhs: &SparsePrimeField<F>) {
         for (exp, coeff) in &rhs.0 {
             match self.0.entry(*exp) {
                 Entry::Occupied(e) => {
@@ -220,14 +220,14 @@ impl<F: PrimeField> SubAssign<&SparsePolyPrimeField<F>> for SparsePolyPrimeField
     }
 }
 
-impl<F: PrimeField> SubAssign<SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn sub_assign(&mut self, rhs: SparsePolyPrimeField<F>) {
+impl<F: PrimeField> SubAssign<SparsePrimeField<F>> for SparsePrimeField<F> {
+    fn sub_assign(&mut self, rhs: SparsePrimeField<F>) {
         *self -= &rhs;
     }
 }
 
-impl<F: PrimeField> Neg for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Neg for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
     fn neg(self) -> Self::Output {
         let mut output = self.clone();
@@ -238,41 +238,41 @@ impl<F: PrimeField> Neg for &SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Neg for SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Neg for SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
     fn neg(self) -> Self::Output {
         -&self
     }
 }
 
-impl<F: PrimeField> Mul<&SparsePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Mul<&SparsePrimeField<F>> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn mul(self, rhs: &SparsePolyPrimeField<F>) -> Self::Output {
+    fn mul(self, rhs: &SparsePrimeField<F>) -> Self::Output {
         let mut output = self.clone();
         output *= rhs;
         output
     }
 }
 
-impl<F: PrimeField> Mul<&SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Mul<&SparsePrimeField<F>> for SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn mul(self, rhs: &SparsePolyPrimeField<F>) -> Self::Output {
+    fn mul(self, rhs: &SparsePrimeField<F>) -> Self::Output {
         &self * rhs
     }
 }
 
-impl<F: PrimeField> Mul<SparsePolyPrimeField<F>> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Mul<SparsePrimeField<F>> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
-    fn mul(self, rhs: SparsePolyPrimeField<F>) -> Self::Output {
+    fn mul(self, rhs: SparsePrimeField<F>) -> Self::Output {
         self * &rhs
     }
 }
 
-impl<F: PrimeField> Mul for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Mul for SparsePrimeField<F> {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
@@ -280,9 +280,9 @@ impl<F: PrimeField> Mul for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> MulAssign<&SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn mul_assign(&mut self, rhs: &SparsePolyPrimeField<F>) {
-        let mut result = SparsePolyPrimeField::default();
+impl<F: PrimeField> MulAssign<&SparsePrimeField<F>> for SparsePrimeField<F> {
+    fn mul_assign(&mut self, rhs: &SparsePrimeField<F>) {
+        let mut result = SparsePrimeField::default();
 
         for (exp1, coeff1) in &self.0 {
             for (exp2, coeff2) in &rhs.0 {
@@ -310,21 +310,21 @@ impl<F: PrimeField> MulAssign<&SparsePolyPrimeField<F>> for SparsePolyPrimeField
     }
 }
 
-impl<F: PrimeField> MulAssign<SparsePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn mul_assign(&mut self, rhs: SparsePolyPrimeField<F>) {
+impl<F: PrimeField> MulAssign<SparsePrimeField<F>> for SparsePrimeField<F> {
+    fn mul_assign(&mut self, rhs: SparsePrimeField<F>) {
         *self *= &rhs;
     }
 }
 
-impl<F: PrimeField> Mul<&F> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Mul<&F> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
     fn mul(self, rhs: &F) -> Self::Output {
         self * *rhs
     }
 }
 
-impl<F: PrimeField> Mul<F> for &SparsePolyPrimeField<F> {
-    type Output = SparsePolyPrimeField<F>;
+impl<F: PrimeField> Mul<F> for &SparsePrimeField<F> {
+    type Output = SparsePrimeField<F>;
 
     fn mul(self, rhs: F) -> Self::Output {
         let mut output = self.clone();
@@ -333,7 +333,7 @@ impl<F: PrimeField> Mul<F> for &SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Mul<&F> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Mul<&F> for SparsePrimeField<F> {
     type Output = Self;
 
     fn mul(self, rhs: &F) -> Self::Output {
@@ -341,7 +341,7 @@ impl<F: PrimeField> Mul<&F> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Mul<F> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Mul<F> for SparsePrimeField<F> {
     type Output = Self;
 
     fn mul(self, rhs: F) -> Self::Output {
@@ -349,19 +349,19 @@ impl<F: PrimeField> Mul<F> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> MulAssign<&F> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> MulAssign<&F> for SparsePrimeField<F> {
     fn mul_assign(&mut self, rhs: &F) {
         *self *= *rhs;
     }
 }
 
-impl<F: PrimeField> MulAssign<F> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> MulAssign<F> for SparsePrimeField<F> {
     fn mul_assign(&mut self, rhs: F) {
         self.0.iter_mut().for_each(|(_, coeff)| *coeff *= rhs);
     }
 }
 
-impl<F: PrimeField> Serialize for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Serialize for SparsePrimeField<F> {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         if s.is_human_readable() {
             self.0
@@ -385,14 +385,14 @@ impl<F: PrimeField> Serialize for SparsePolyPrimeField<F> {
     }
 }
 
-impl<'de, F: PrimeField> Deserialize<'de> for SparsePolyPrimeField<F> {
+impl<'de, F: PrimeField> Deserialize<'de> for SparsePrimeField<F> {
     fn deserialize<D>(d: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
     {
         if d.is_human_readable() {
             let v: Vec<(String, String)> = Vec::deserialize(d)?;
-            let mut result = SparsePolyPrimeField::default();
+            let mut result = SparsePrimeField::default();
             for (power, c) in &v {
                 let repr_bytes = hex::decode(c).map_err(E::custom)?;
                 let mut repr = F::Repr::default();
@@ -405,7 +405,7 @@ impl<'de, F: PrimeField> Deserialize<'de> for SparsePolyPrimeField<F> {
             Ok(result)
         } else {
             let v: Vec<Vec<u8>> = Vec::deserialize(d)?;
-            let mut result = SparsePolyPrimeField::default();
+            let mut result = SparsePrimeField::default();
             for bytes in &v {
                 let mut repr = F::Repr::default();
                 let len = repr.as_ref().len();
@@ -432,7 +432,7 @@ impl<'de, F: PrimeField> Deserialize<'de> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> FromIterator<(usize, F)> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> FromIterator<(usize, F)> for SparsePrimeField<F> {
     fn from_iter<T: IntoIterator<Item = (usize, F)>>(iter: T) -> Self {
         let mut inner = BTreeMap::new();
         for (power, coeff) in iter {
@@ -454,7 +454,7 @@ impl<F: PrimeField> FromIterator<(usize, F)> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<'a, F: PrimeField> FromIterator<(&'a usize, F)> for SparsePolyPrimeField<F> {
+impl<'a, F: PrimeField> FromIterator<(&'a usize, F)> for SparsePrimeField<F> {
     fn from_iter<T: IntoIterator<Item = (&'a usize, F)>>(iter: T) -> Self {
         let mut inner = BTreeMap::new();
         for (power, coeff) in iter {
@@ -476,7 +476,7 @@ impl<'a, F: PrimeField> FromIterator<(&'a usize, F)> for SparsePolyPrimeField<F>
     }
 }
 
-impl<'a, F: PrimeField> FromIterator<(usize, &'a F)> for SparsePolyPrimeField<F> {
+impl<'a, F: PrimeField> FromIterator<(usize, &'a F)> for SparsePrimeField<F> {
     fn from_iter<T: IntoIterator<Item = (usize, &'a F)>>(iter: T) -> Self {
         let mut inner = BTreeMap::new();
         for (power, coeff) in iter {
@@ -498,7 +498,7 @@ impl<'a, F: PrimeField> FromIterator<(usize, &'a F)> for SparsePolyPrimeField<F>
     }
 }
 
-impl<'a, F: PrimeField> FromIterator<(&'a usize, &'a F)> for SparsePolyPrimeField<F> {
+impl<'a, F: PrimeField> FromIterator<(&'a usize, &'a F)> for SparsePrimeField<F> {
     fn from_iter<T: IntoIterator<Item = (&'a usize, &'a F)>>(iter: T) -> Self {
         let mut inner = BTreeMap::new();
         for (power, coeff) in iter {
@@ -520,7 +520,7 @@ impl<'a, F: PrimeField> FromIterator<(&'a usize, &'a F)> for SparsePolyPrimeFiel
     }
 }
 
-impl<'a, F: PrimeField> FromIterator<&'a (usize, F)> for SparsePolyPrimeField<F> {
+impl<'a, F: PrimeField> FromIterator<&'a (usize, F)> for SparsePrimeField<F> {
     fn from_iter<T: IntoIterator<Item = &'a (usize, F)>>(iter: T) -> Self {
         let mut inner = BTreeMap::new();
         for (power, coeff) in iter {
@@ -542,49 +542,49 @@ impl<'a, F: PrimeField> FromIterator<&'a (usize, F)> for SparsePolyPrimeField<F>
     }
 }
 
-impl<F: PrimeField> From<&DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn from(value: &DensePolyPrimeField<F>) -> Self {
+impl<F: PrimeField> From<&DensePrimeField<F>> for SparsePrimeField<F> {
+    fn from(value: &DensePrimeField<F>) -> Self {
         Self::from_iter(value.0.iter().enumerate())
     }
 }
 
-impl<F: PrimeField> From<DensePolyPrimeField<F>> for SparsePolyPrimeField<F> {
-    fn from(value: DensePolyPrimeField<F>) -> Self {
+impl<F: PrimeField> From<DensePrimeField<F>> for SparsePrimeField<F> {
+    fn from(value: DensePrimeField<F>) -> Self {
         Self::from(&value)
     }
 }
 
-impl<F: PrimeField> From<&[(usize, F)]> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> From<&[(usize, F)]> for SparsePrimeField<F> {
     fn from(value: &[(usize, F)]) -> Self {
-        SparsePolyPrimeField::from_iter(value)
+        SparsePrimeField::from_iter(value)
     }
 }
 
-impl<F: PrimeField> From<Vec<(usize, F)>> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> From<Vec<(usize, F)>> for SparsePrimeField<F> {
     fn from(value: Vec<(usize, F)>) -> Self {
         Self::from(value.as_slice())
     }
 }
 
-impl<F: PrimeField> From<&Vec<(usize, F)>> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> From<&Vec<(usize, F)>> for SparsePrimeField<F> {
     fn from(value: &Vec<(usize, F)>) -> Self {
         Self::from(value.as_slice())
     }
 }
 
-impl<F: PrimeField> From<SparsePolyPrimeField<F>> for Vec<u8> {
-    fn from(value: SparsePolyPrimeField<F>) -> Self {
+impl<F: PrimeField> From<SparsePrimeField<F>> for Vec<u8> {
+    fn from(value: SparsePrimeField<F>) -> Self {
         Self::from(&value)
     }
 }
 
-impl<F: PrimeField> From<&SparsePolyPrimeField<F>> for Vec<u8> {
-    fn from(value: &SparsePolyPrimeField<F>) -> Self {
+impl<F: PrimeField> From<&SparsePrimeField<F>> for Vec<u8> {
+    fn from(value: &SparsePrimeField<F>) -> Self {
         serde_bare::to_vec(value).expect("to serialize to bytes")
     }
 }
 
-impl<F: PrimeField> TryFrom<Vec<u8>> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> TryFrom<Vec<u8>> for SparsePrimeField<F> {
     type Error = &'static str;
 
     fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
@@ -592,7 +592,7 @@ impl<F: PrimeField> TryFrom<Vec<u8>> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> TryFrom<&Vec<u8>> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> TryFrom<&Vec<u8>> for SparsePrimeField<F> {
     type Error = &'static str;
 
     fn try_from(value: &Vec<u8>) -> Result<Self, Self::Error> {
@@ -600,7 +600,7 @@ impl<F: PrimeField> TryFrom<&Vec<u8>> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> TryFrom<&[u8]> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> TryFrom<&[u8]> for SparsePrimeField<F> {
     type Error = &'static str;
 
     fn try_from(value: &[u8]) -> Result<Self, Self::Error> {
@@ -609,7 +609,7 @@ impl<F: PrimeField> TryFrom<&[u8]> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> TryFrom<Box<[u8]>> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> TryFrom<Box<[u8]>> for SparsePrimeField<F> {
     type Error = &'static str;
 
     fn try_from(value: Box<[u8]>) -> Result<Self, Self::Error> {
@@ -617,7 +617,7 @@ impl<F: PrimeField> TryFrom<Box<[u8]>> for SparsePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Polynomial<F> for SparsePolyPrimeField<F> {
+impl<F: PrimeField> Polynomial<F> for SparsePrimeField<F> {
     type X = F;
     const ZERO: Self = Self(BTreeMap::new());
 
@@ -665,7 +665,7 @@ impl<F: PrimeField> Polynomial<F> for SparsePolyPrimeField<F> {
             return (Self::ZERO, self.clone());
         }
 
-        let mut quotient = SparsePolyPrimeField(BTreeMap::new());
+        let mut quotient = SparsePrimeField(BTreeMap::new());
         let mut remainder = self.clone();
 
         // Loop until the remainder's degree is less than the divisor's degree
@@ -697,14 +697,14 @@ impl<F: PrimeField> Polynomial<F> for SparsePolyPrimeField<F> {
                 m.0.iter()
                     .map(|(exp, coeff)| (*exp + exp_diff, *coeff * coeff_div))
                     .collect::<BTreeMap<_, _>>();
-            remainder -= SparsePolyPrimeField(term_to_subtract);
+            remainder -= SparsePrimeField(term_to_subtract);
         }
 
         (quotient, remainder)
     }
 }
 
-impl<F: PrimeField> SparsePolyPrimeField<F> {
+impl<F: PrimeField> SparsePrimeField<F> {
     /// Generate a random sparse polynomial where the length is defined by the `num_terms`
     /// and the powers are randomly less than `max_power`
     pub fn random(num_terms: usize, max_power: usize, mut rng: impl RngCore + CryptoRng) -> Self {
@@ -735,8 +735,8 @@ mod tests {
     #[test]
     fn add() {
         let mut rng = ChaChaRng::from_seed([4u8; 32]);
-        let a = SparsePolyPrimeField::<k256::Scalar>::random(4, 100, &mut rng);
-        let b = SparsePolyPrimeField::<k256::Scalar>::random(4, 100, &mut rng);
+        let a = SparsePrimeField::<k256::Scalar>::random(4, 100, &mut rng);
+        let b = SparsePrimeField::<k256::Scalar>::random(4, 100, &mut rng);
         assert!(a.degree() < 100);
         assert!(b.degree() < 100);
         let c = &a + &b;
@@ -746,8 +746,8 @@ mod tests {
     #[test]
     fn sub() {
         let mut rng = ChaChaRng::from_seed([4u8; 32]);
-        let a = SparsePolyPrimeField::<k256::Scalar>::random(4, 100, &mut rng);
-        let b = SparsePolyPrimeField::<k256::Scalar>::random(4, 100, &mut rng);
+        let a = SparsePrimeField::<k256::Scalar>::random(4, 100, &mut rng);
+        let b = SparsePrimeField::<k256::Scalar>::random(4, 100, &mut rng);
         assert!(a.degree() < 100);
         assert!(b.degree() < 100);
         let c = &a - &b;
@@ -757,8 +757,8 @@ mod tests {
     #[test]
     fn mul() {
         let mut rng = ChaChaRng::from_seed([8u8; 32]);
-        let a = SparsePolyPrimeField::<k256::Scalar>::random(4, 100, &mut rng);
-        let b = SparsePolyPrimeField::<k256::Scalar>::random(4, 100, &mut rng);
+        let a = SparsePrimeField::<k256::Scalar>::random(4, 100, &mut rng);
+        let b = SparsePrimeField::<k256::Scalar>::random(4, 100, &mut rng);
         let c = &a * &b;
         println!("{}", c);
     }
@@ -766,13 +766,13 @@ mod tests {
     #[test]
     fn poly_mod() {
         // x^4 - 2x^2 - 4
-        let mut dividend = SparsePolyPrimeField::default();
+        let mut dividend = SparsePrimeField::default();
         dividend.0.insert(3, k256::Scalar::ONE);
         dividend.0.insert(2, -k256::Scalar::from(2u32));
         dividend.0.insert(0, -k256::Scalar::from(4u32));
 
         // x - 3
-        let mut divisor = SparsePolyPrimeField::default();
+        let mut divisor = SparsePrimeField::default();
         divisor.0.insert(1, k256::Scalar::ONE);
         divisor.0.insert(0, -k256::Scalar::from(3u32));
 
@@ -791,8 +791,8 @@ mod tests {
 
         let mut rng = ChaChaRng::from_seed([9u8; 32]);
 
-        let a = SparsePolyPrimeField::<k256::Scalar>::random(4, 20, &mut rng);
-        let b = SparsePolyPrimeField::<k256::Scalar>::random(2, 10, &mut rng);
+        let a = SparsePrimeField::<k256::Scalar>::random(4, 20, &mut rng);
+        let b = SparsePrimeField::<k256::Scalar>::random(2, 10, &mut rng);
 
         let (div, rem) = a.poly_mod(&b);
         let div_b = &div * &b;
@@ -800,15 +800,15 @@ mod tests {
         assert_eq!(a, div_b_pr);
 
         let (div, rem) = b.poly_mod(&a);
-        assert_eq!(div, SparsePolyPrimeField::default());
+        assert_eq!(div, SparsePrimeField::default());
         assert_eq!(rem, b);
     }
 
     #[test]
     fn poly_mod_cyclotomic() {
         let mut rng = ChaChaRng::from_seed([9u8; 32]);
-        let a = SparsePolyPrimeField::<k256::Scalar>::random(10, 100, &mut rng);
-        let mut b = SparsePolyPrimeField::default();
+        let a = SparsePrimeField::<k256::Scalar>::random(10, 100, &mut rng);
+        let mut b = SparsePrimeField::default();
         b.0.insert(a.degree() / 2, k256::Scalar::ONE);
         b.0.insert(0, -k256::Scalar::ONE);
 
@@ -820,13 +820,13 @@ mod tests {
 
     #[test]
     fn dot_product() {
-        let a = SparsePolyPrimeField(maplit::btreemap! {
+        let a = SparsePrimeField(maplit::btreemap! {
             1 => k256::Scalar::from(2u32),
             2 => k256::Scalar::from(3u32),
             3 => k256::Scalar::from(4u32),
             6 => k256::Scalar::from(10u32),
         });
-        let b = SparsePolyPrimeField(maplit::btreemap! {
+        let b = SparsePrimeField(maplit::btreemap! {
             1 => k256::Scalar::from(2u32),
             3 => k256::Scalar::from(3u32),
             4 => k256::Scalar::from(4u32),

@@ -16,28 +16,28 @@ use std::{
 
 /// A polynomial over a prime field
 #[derive(Clone, PartialEq, Eq)]
-pub struct DensePolyPrimeField<F: PrimeField>(
+pub struct DensePrimeField<F: PrimeField>(
     /// The coefficients of the polynomial
     pub Vec<F>,
 );
 
-unsafe impl<F: PrimeField> Send for DensePolyPrimeField<F> {}
+unsafe impl<F: PrimeField> Send for DensePrimeField<F> {}
 
-unsafe impl<F: PrimeField> Sync for DensePolyPrimeField<F> {}
+unsafe impl<F: PrimeField> Sync for DensePrimeField<F> {}
 
-impl<F: PrimeField> Default for DensePolyPrimeField<F> {
+impl<F: PrimeField> Default for DensePrimeField<F> {
     fn default() -> Self {
         Self(vec![])
     }
 }
 
-impl<F: PrimeField> Debug for DensePolyPrimeField<F> {
+impl<F: PrimeField> Debug for DensePrimeField<F> {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         write!(f, "PolyPrimeField({:?})", self.0)
     }
 }
 
-impl<F: PrimeField> Display for DensePolyPrimeField<F> {
+impl<F: PrimeField> Display for DensePrimeField<F> {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         let vals = self
             .0
@@ -57,33 +57,33 @@ impl<F: PrimeField> Display for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Add<&DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Add<&DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn add(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: &DensePrimeField<F>) -> Self::Output {
         let mut output = self.clone();
         add_poly(&mut output.0, &rhs.0);
         output
     }
 }
 
-impl<F: PrimeField> Add<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Add<&DensePrimeField<F>> for DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn add(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: &DensePrimeField<F>) -> Self::Output {
         &self + rhs
     }
 }
 
-impl<F: PrimeField> Add<DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Add<DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn add(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+    fn add(self, rhs: DensePrimeField<F>) -> Self::Output {
         self + &rhs
     }
 }
 
-impl<F: PrimeField> Add for DensePolyPrimeField<F> {
+impl<F: PrimeField> Add for DensePrimeField<F> {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self::Output {
@@ -91,45 +91,45 @@ impl<F: PrimeField> Add for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> AddAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn add_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+impl<F: PrimeField> AddAssign<&DensePrimeField<F>> for DensePrimeField<F> {
+    fn add_assign(&mut self, rhs: &DensePrimeField<F>) {
         add_poly(&mut self.0, &rhs.0);
     }
 }
 
-impl<F: PrimeField> AddAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn add_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+impl<F: PrimeField> AddAssign<DensePrimeField<F>> for DensePrimeField<F> {
+    fn add_assign(&mut self, rhs: DensePrimeField<F>) {
         add_poly(&mut self.0, &rhs.0);
     }
 }
 
-impl<F: PrimeField> Sub<&DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Sub<&DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn sub(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn sub(self, rhs: &DensePrimeField<F>) -> Self::Output {
         let mut output = self.clone();
         sub_poly(&mut output.0, &rhs.0);
         output
     }
 }
 
-impl<F: PrimeField> Sub<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Sub<&DensePrimeField<F>> for DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn sub(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn sub(self, rhs: &DensePrimeField<F>) -> Self::Output {
         &self - rhs
     }
 }
 
-impl<F: PrimeField> Sub<DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Sub<DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn sub(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+    fn sub(self, rhs: DensePrimeField<F>) -> Self::Output {
         self - &rhs
     }
 }
 
-impl<F: PrimeField> Sub for DensePolyPrimeField<F> {
+impl<F: PrimeField> Sub for DensePrimeField<F> {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self::Output {
@@ -137,20 +137,20 @@ impl<F: PrimeField> Sub for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> SubAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn sub_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+impl<F: PrimeField> SubAssign<&DensePrimeField<F>> for DensePrimeField<F> {
+    fn sub_assign(&mut self, rhs: &DensePrimeField<F>) {
         sub_poly(&mut self.0, &rhs.0);
     }
 }
 
-impl<F: PrimeField> SubAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn sub_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+impl<F: PrimeField> SubAssign<DensePrimeField<F>> for DensePrimeField<F> {
+    fn sub_assign(&mut self, rhs: DensePrimeField<F>) {
         sub_poly(&mut self.0, &rhs.0);
     }
 }
 
-impl<F: PrimeField> Neg for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Neg for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
     fn neg(self) -> Self::Output {
         let mut output = self.clone();
@@ -159,7 +159,7 @@ impl<F: PrimeField> Neg for &DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Neg for DensePolyPrimeField<F> {
+impl<F: PrimeField> Neg for DensePrimeField<F> {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
@@ -167,33 +167,33 @@ impl<F: PrimeField> Neg for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Mul<&DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Mul<&DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn mul(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn mul(self, rhs: &DensePrimeField<F>) -> Self::Output {
         let mut output = self.clone();
         mul_poly(&mut output.0, &rhs.0, F::ZERO);
         output
     }
 }
 
-impl<F: PrimeField> Mul<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Mul<&DensePrimeField<F>> for DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn mul(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn mul(self, rhs: &DensePrimeField<F>) -> Self::Output {
         &self * rhs
     }
 }
 
-impl<F: PrimeField> Mul<DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Mul<DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn mul(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+    fn mul(self, rhs: DensePrimeField<F>) -> Self::Output {
         self * &rhs
     }
 }
 
-impl<F: PrimeField> Mul for DensePolyPrimeField<F> {
+impl<F: PrimeField> Mul for DensePrimeField<F> {
     type Output = Self;
 
     fn mul(self, rhs: Self) -> Self::Output {
@@ -201,24 +201,24 @@ impl<F: PrimeField> Mul for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Mul<&F> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Mul<&F> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
     fn mul(self, rhs: &F) -> Self::Output {
         self * *rhs
     }
 }
 
-impl<F: PrimeField> Mul<F> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Mul<F> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
     fn mul(self, rhs: F) -> Self::Output {
         let output = self.0.par_iter().map(|s| *s * rhs).collect();
-        DensePolyPrimeField(output)
+        DensePrimeField(output)
     }
 }
 
-impl<F: PrimeField> Mul<&F> for DensePolyPrimeField<F> {
+impl<F: PrimeField> Mul<&F> for DensePrimeField<F> {
     type Output = Self;
 
     fn mul(self, rhs: &F) -> Self::Output {
@@ -226,7 +226,7 @@ impl<F: PrimeField> Mul<&F> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Mul<F> for DensePolyPrimeField<F> {
+impl<F: PrimeField> Mul<F> for DensePrimeField<F> {
     type Output = Self;
 
     fn mul(self, rhs: F) -> Self::Output {
@@ -234,56 +234,56 @@ impl<F: PrimeField> Mul<F> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> MulAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn mul_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+impl<F: PrimeField> MulAssign<&DensePrimeField<F>> for DensePrimeField<F> {
+    fn mul_assign(&mut self, rhs: &DensePrimeField<F>) {
         mul_poly(&mut self.0, &rhs.0, F::ZERO);
     }
 }
 
-impl<F: PrimeField> MulAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn mul_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+impl<F: PrimeField> MulAssign<DensePrimeField<F>> for DensePrimeField<F> {
+    fn mul_assign(&mut self, rhs: DensePrimeField<F>) {
         mul_poly(&mut self.0, &rhs.0, F::ZERO);
     }
 }
 
-impl<F: PrimeField> MulAssign<&F> for DensePolyPrimeField<F> {
+impl<F: PrimeField> MulAssign<&F> for DensePrimeField<F> {
     fn mul_assign(&mut self, rhs: &F) {
         *self *= *rhs;
     }
 }
 
-impl<F: PrimeField> MulAssign<F> for DensePolyPrimeField<F> {
+impl<F: PrimeField> MulAssign<F> for DensePrimeField<F> {
     fn mul_assign(&mut self, rhs: F) {
         self.0.par_iter_mut().for_each(|coeff| *coeff *= rhs);
     }
 }
 
-impl<F: PrimeField> Div<&DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Div<&DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn div(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn div(self, rhs: &DensePrimeField<F>) -> Self::Output {
         let (quotient, _) = self.poly_mod(rhs);
         quotient
     }
 }
 
-impl<F: PrimeField> Div<DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Div<DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn div(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+    fn div(self, rhs: DensePrimeField<F>) -> Self::Output {
         self / &rhs
     }
 }
 
-impl<F: PrimeField> Div<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Div<&DensePrimeField<F>> for DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn div(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn div(self, rhs: &DensePrimeField<F>) -> Self::Output {
         &self / rhs
     }
 }
 
-impl<F: PrimeField> Div for DensePolyPrimeField<F> {
+impl<F: PrimeField> Div for DensePrimeField<F> {
     type Output = Self;
 
     fn div(self, rhs: Self) -> Self::Output {
@@ -291,44 +291,44 @@ impl<F: PrimeField> Div for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> DivAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn div_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+impl<F: PrimeField> DivAssign<&DensePrimeField<F>> for DensePrimeField<F> {
+    fn div_assign(&mut self, rhs: &DensePrimeField<F>) {
         *self = &*self / rhs;
     }
 }
 
-impl<F: PrimeField> DivAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn div_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+impl<F: PrimeField> DivAssign<DensePrimeField<F>> for DensePrimeField<F> {
+    fn div_assign(&mut self, rhs: DensePrimeField<F>) {
         *self = &*self / &rhs;
     }
 }
 
-impl<F: PrimeField> Rem<&DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Rem<&DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn rem(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn rem(self, rhs: &DensePrimeField<F>) -> Self::Output {
         let (_, remainder) = self.poly_mod(rhs);
         remainder
     }
 }
 
-impl<F: PrimeField> Rem<DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Rem<DensePrimeField<F>> for &DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn rem(self, rhs: DensePolyPrimeField<F>) -> Self::Output {
+    fn rem(self, rhs: DensePrimeField<F>) -> Self::Output {
         self % &rhs
     }
 }
 
-impl<F: PrimeField> Rem<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    type Output = DensePolyPrimeField<F>;
+impl<F: PrimeField> Rem<&DensePrimeField<F>> for DensePrimeField<F> {
+    type Output = DensePrimeField<F>;
 
-    fn rem(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
+    fn rem(self, rhs: &DensePrimeField<F>) -> Self::Output {
         &self % rhs
     }
 }
 
-impl<F: PrimeField> Rem for DensePolyPrimeField<F> {
+impl<F: PrimeField> Rem for DensePrimeField<F> {
     type Output = Self;
 
     fn rem(self, rhs: Self) -> Self::Output {
@@ -336,19 +336,19 @@ impl<F: PrimeField> Rem for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> RemAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn rem_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
+impl<F: PrimeField> RemAssign<&DensePrimeField<F>> for DensePrimeField<F> {
+    fn rem_assign(&mut self, rhs: &DensePrimeField<F>) {
         *self = &*self % rhs;
     }
 }
 
-impl<F: PrimeField> RemAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
-    fn rem_assign(&mut self, rhs: DensePolyPrimeField<F>) {
+impl<F: PrimeField> RemAssign<DensePrimeField<F>> for DensePrimeField<F> {
+    fn rem_assign(&mut self, rhs: DensePrimeField<F>) {
         *self = &*self % &rhs;
     }
 }
 
-impl<F: PrimeField> Serialize for DensePolyPrimeField<F> {
+impl<F: PrimeField> Serialize for DensePrimeField<F> {
     fn serialize<S: Serializer>(&self, s: S) -> Result<S::Ok, S::Error> {
         if s.is_human_readable() {
             self.0
@@ -366,7 +366,7 @@ impl<F: PrimeField> Serialize for DensePolyPrimeField<F> {
     }
 }
 
-impl<'de, F: PrimeField> Deserialize<'de> for DensePolyPrimeField<F> {
+impl<'de, F: PrimeField> Deserialize<'de> for DensePrimeField<F> {
     fn deserialize<D>(d: D) -> Result<Self, D::Error>
     where
         D: Deserializer<'de>,
@@ -388,7 +388,7 @@ impl<'de, F: PrimeField> Deserialize<'de> for DensePolyPrimeField<F> {
             struct PolyVisitor<F: PrimeField>(PhantomData<F>);
 
             impl<'de, F: PrimeField> Visitor<'de> for PolyVisitor<F> {
-                type Value = DensePolyPrimeField<F>;
+                type Value = DensePrimeField<F>;
 
                 fn expecting(&self, f: &mut Formatter<'_>) -> FmtResult {
                     write!(f, "a byte sequence")
@@ -411,7 +411,7 @@ impl<'de, F: PrimeField> Deserialize<'de> for DensePolyPrimeField<F> {
                                 .ok_or(E::custom("Invalid scalar".to_string()))?,
                         );
                     }
-                    Ok(DensePolyPrimeField(coeffs))
+                    Ok(DensePrimeField(coeffs))
                 }
             }
 
@@ -420,7 +420,7 @@ impl<'de, F: PrimeField> Deserialize<'de> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> Polynomial<F> for DensePolyPrimeField<F> {
+impl<F: PrimeField> Polynomial<F> for DensePrimeField<F> {
     type X = F;
 
     const ZERO: Self = Self(Vec::new());
@@ -506,7 +506,7 @@ impl<F: PrimeField> Polynomial<F> for DensePolyPrimeField<F> {
     }
 }
 
-impl<'a, F: PrimeField> FromIterator<&'a F> for DensePolyPrimeField<F> {
+impl<'a, F: PrimeField> FromIterator<&'a F> for DensePrimeField<F> {
     fn from_iter<T: IntoIterator<Item = &'a F>>(iter: T) -> Self {
         let mut inner = Vec::new();
         for coeff in iter {
@@ -516,20 +516,20 @@ impl<'a, F: PrimeField> FromIterator<&'a F> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> FromIterator<F> for DensePolyPrimeField<F> {
+impl<F: PrimeField> FromIterator<F> for DensePrimeField<F> {
     fn from_iter<T: IntoIterator<Item = F>>(iter: T) -> Self {
         Self(Vec::from_iter(iter))
     }
 }
 
-impl<F: PrimeField> From<DensePolyPrimeField<F>> for Vec<u8> {
-    fn from(p: DensePolyPrimeField<F>) -> Self {
+impl<F: PrimeField> From<DensePrimeField<F>> for Vec<u8> {
+    fn from(p: DensePrimeField<F>) -> Self {
         Self::from(&p)
     }
 }
 
-impl<F: PrimeField> From<&DensePolyPrimeField<F>> for Vec<u8> {
-    fn from(p: &DensePolyPrimeField<F>) -> Self {
+impl<F: PrimeField> From<&DensePrimeField<F>> for Vec<u8> {
+    fn from(p: &DensePrimeField<F>) -> Self {
         let mut bytes = vec![];
         for c in p.0.iter() {
             bytes.extend_from_slice(c.to_repr().as_ref());
@@ -538,14 +538,14 @@ impl<F: PrimeField> From<&DensePolyPrimeField<F>> for Vec<u8> {
     }
 }
 
-impl<F: PrimeField> TryFrom<Vec<u8>> for DensePolyPrimeField<F> {
+impl<F: PrimeField> TryFrom<Vec<u8>> for DensePrimeField<F> {
     type Error = &'static str;
     fn try_from(bytes: Vec<u8>) -> Result<Self, Self::Error> {
         Self::try_from(&bytes[..])
     }
 }
 
-impl<F: PrimeField> TryFrom<&Vec<u8>> for DensePolyPrimeField<F> {
+impl<F: PrimeField> TryFrom<&Vec<u8>> for DensePrimeField<F> {
     type Error = &'static str;
 
     fn try_from(value: &Vec<u8>) -> Result<Self, Self::Error> {
@@ -553,7 +553,7 @@ impl<F: PrimeField> TryFrom<&Vec<u8>> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> TryFrom<&[u8]> for DensePolyPrimeField<F> {
+impl<F: PrimeField> TryFrom<&[u8]> for DensePrimeField<F> {
     type Error = &'static str;
 
     fn try_from(bytes: &[u8]) -> Result<Self, Self::Error> {
@@ -571,7 +571,7 @@ impl<F: PrimeField> TryFrom<&[u8]> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> TryFrom<Box<[u8]>> for DensePolyPrimeField<F> {
+impl<F: PrimeField> TryFrom<Box<[u8]>> for DensePrimeField<F> {
     type Error = &'static str;
 
     fn try_from(value: Box<[u8]>) -> Result<Self, Self::Error> {
@@ -579,7 +579,7 @@ impl<F: PrimeField> TryFrom<Box<[u8]>> for DensePolyPrimeField<F> {
     }
 }
 
-impl<F: PrimeField> DensePolyPrimeField<F> {
+impl<F: PrimeField> DensePrimeField<F> {
     fn poly_mod_cyclotomic(&self, degree: usize) -> (Self, Self) {
         if self.0.len() <= degree {
             return (Self::ZERO, self.clone());
@@ -661,8 +661,8 @@ mod tests {
     fn poly_mod<F: PrimeField>(#[case] _f: F) {
         let mut rng = ChaChaRng::from_seed([7u8; 32]);
 
-        let a = DensePolyPrimeField((0..63).map(|_| F::random(&mut rng)).collect());
-        let b = DensePolyPrimeField((0..33).map(|_| F::random(&mut rng)).collect());
+        let a = DensePrimeField((0..63).map(|_| F::random(&mut rng)).collect());
+        let b = DensePrimeField((0..33).map(|_| F::random(&mut rng)).collect());
 
         let (div, rem) = a.poly_mod(&b);
         let div_b = &div * &b;
@@ -682,8 +682,8 @@ mod tests {
     fn poly_mod_cyclotomic<F: PrimeField>(#[case] _f: F) {
         const DEGREE: usize = 320;
         let mut rng = ChaChaRng::from_seed([11u8; 32]);
-        let a = DensePolyPrimeField((0..2 * DEGREE - 1).map(|_| F::random(&mut rng)).collect());
-        let mut b = DensePolyPrimeField((0..DEGREE + 1).map(|_| F::ZERO).collect());
+        let a = DensePrimeField((0..2 * DEGREE - 1).map(|_| F::random(&mut rng)).collect());
+        let mut b = DensePrimeField((0..DEGREE + 1).map(|_| F::ZERO).collect());
         b.0[0] = -F::ONE;
         b.0[DEGREE] = F::ONE;
         let (div, rem) = a.poly_mod(&b);
@@ -703,11 +703,11 @@ mod tests {
     #[case::jubjub(jubjub::Scalar::default())]
     fn serialize<F: PrimeField>(#[case] _f: F) {
         let mut rng = ChaChaRng::from_seed([11u8; 32]);
-        let a = DensePolyPrimeField((0..10).map(|_| F::random(&mut rng)).collect());
+        let a = DensePrimeField((0..10).map(|_| F::random(&mut rng)).collect());
         let res = serde_json::to_string(&a);
         assert!(res.is_ok());
         let serialized = res.unwrap();
-        let res = serde_json::from_str::<DensePolyPrimeField<F>>(&serialized);
+        let res = serde_json::from_str::<DensePrimeField<F>>(&serialized);
         assert!(res.is_ok());
         let deserialized = res.unwrap();
         assert_eq!(a, deserialized);
@@ -715,7 +715,7 @@ mod tests {
         let res = serde_bare::to_vec(&a);
         assert!(res.is_ok());
         let serialized = res.unwrap();
-        let res = serde_bare::from_slice::<DensePolyPrimeField<F>>(&serialized);
+        let res = serde_bare::from_slice::<DensePrimeField<F>>(&serialized);
         assert!(res.is_ok());
         let deserialized = res.unwrap();
         assert_eq!(a, deserialized);
@@ -723,7 +723,7 @@ mod tests {
 
     #[test]
     fn display() {
-        let a = DensePolyPrimeField(vec![
+        let a = DensePrimeField(vec![
             k256::Scalar::from(5u64),
             k256::Scalar::from(10u64),
             k256::Scalar::from(20u64),
@@ -742,8 +742,8 @@ mod tests {
     fn add<F: PrimeField>(#[case] _f: F) {
         let mut rng = ChaChaRng::from_seed([5u8; 32]);
         // Same length
-        let a = DensePolyPrimeField::<F>::random(5, &mut rng);
-        let b = DensePolyPrimeField::<F>::random(5, &mut rng);
+        let a = DensePrimeField::<F>::random(5, &mut rng);
+        let b = DensePrimeField::<F>::random(5, &mut rng);
 
         let c = &a + &b;
         for i in 0..6 {
@@ -751,8 +751,8 @@ mod tests {
         }
 
         // Different lengths
-        let a = DensePolyPrimeField::<F>::random(4, &mut rng);
-        let b = DensePolyPrimeField::<F>::random(7, &mut rng);
+        let a = DensePrimeField::<F>::random(4, &mut rng);
+        let b = DensePrimeField::<F>::random(7, &mut rng);
         let c = &a + &b;
         assert_eq!(c.0.len(), 8);
         for i in 0..5 {
@@ -774,8 +774,8 @@ mod tests {
     fn sub<F: PrimeField>(#[case] _f: F) {
         let mut rng = ChaChaRng::from_seed([4u8; 32]);
         // Same length
-        let a = DensePolyPrimeField::<F>::random(5, &mut rng);
-        let b = DensePolyPrimeField::<F>::random(5, &mut rng);
+        let a = DensePrimeField::<F>::random(5, &mut rng);
+        let b = DensePrimeField::<F>::random(5, &mut rng);
 
         let c = &a - &b;
         for i in 0..6 {
@@ -783,8 +783,8 @@ mod tests {
         }
 
         // Different lengths
-        let a = DensePolyPrimeField::<F>::random(4, &mut rng);
-        let b = DensePolyPrimeField::<F>::random(7, &mut rng);
+        let a = DensePrimeField::<F>::random(4, &mut rng);
+        let b = DensePrimeField::<F>::random(7, &mut rng);
         let c = &a - &b;
         assert_eq!(c.0.len(), 8);
         for i in 0..5 {
@@ -797,12 +797,12 @@ mod tests {
 
     #[test]
     fn dot_product() {
-        let a = DensePolyPrimeField(vec![
+        let a = DensePrimeField(vec![
             k256::Scalar::from(5u64),
             k256::Scalar::from(10u64),
             k256::Scalar::from(20u64),
         ]);
-        let b = DensePolyPrimeField(vec![
+        let b = DensePrimeField(vec![
             k256::Scalar::from(2u64),
             k256::Scalar::from(4u64),
             k256::Scalar::from(8u64),
