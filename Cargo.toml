@@ -4,6 +4,7 @@ edition = "2021"
 version = "0.1.0"
 
 [dependencies]
+crypto-bigint = { version = "0.5", features = ["serde"] }
 elliptic-curve = { version = "0.13", features = ["arithmetic"] }
 hex = "0.4"
 rand = "0.8"

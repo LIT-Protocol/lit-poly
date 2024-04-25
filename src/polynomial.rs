@@ -2,13 +2,13 @@
     Copyright LIT Protocol . All Rights Reserved.
     SPDX-License-Identifier: FSL-1.1
 */
-mod dense;
+mod dense_polydynresidue;
+mod dense_primefield;
 mod sparse;
 
-pub use dense::DensePolyPrimeField;
+pub use dense_primefield::DensePolyPrimeField;
 pub use sparse::SparsePolyPrimeField;
 
-use elliptic_curve::PrimeField;
 use rand::RngCore;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -77,7 +77,7 @@ fn to_super_script_digits(n: usize) -> String {
         .collect()
 }
 
-pub(crate) fn add_poly<F: PrimeField>(lhs: &mut Vec<F>, rhs: &[F]) {
+pub(crate) fn add_poly<I: for<'a> AddAssign<&'a I> + Copy>(lhs: &mut Vec<I>, rhs: &[I]) {
     let min_len = core::cmp::min(lhs.len(), rhs.len());
 
     if lhs.len() == min_len {
@@ -90,7 +90,10 @@ pub(crate) fn add_poly<F: PrimeField>(lhs: &mut Vec<F>, rhs: &[F]) {
     }
 }
 
-pub(crate) fn sub_poly<F: PrimeField>(lhs: &mut Vec<F>, rhs: &[F]) {
+pub(crate) fn sub_poly<I: for<'a> SubAssign<&'a I> + Copy + Neg<Output = I>>(
+    lhs: &mut Vec<I>,
+    rhs: &[I],
+) {
     let min_len = core::cmp::min(lhs.len(), rhs.len());
 
     if lhs.len() == min_len {
@@ -104,16 +107,20 @@ pub(crate) fn sub_poly<F: PrimeField>(lhs: &mut Vec<F>, rhs: &[F]) {
     }
 }
 
-pub(crate) fn mul_poly<F: PrimeField>(lhs: &mut Vec<F>, rhs: &[F]) {
+pub(crate) fn mul_poly<I: AddAssign<I> + Mul<Output = I> + Copy>(
+    lhs: &mut Vec<I>,
+    rhs: &[I],
+    filler: I,
+) {
     if lhs.is_empty() || rhs.is_empty() {
         lhs.clear();
     } else {
         let orig = lhs.clone();
         for i in &mut *lhs {
-            *i = F::ZERO;
+            *i = filler;
         }
         // M + N
-        lhs.resize_with(lhs.len() + rhs.len(), || F::ZERO);
+        lhs.resize_with(lhs.len() + rhs.len(), || filler);
 
         // Calculate product
         for (i, item) in orig.iter().enumerate() {

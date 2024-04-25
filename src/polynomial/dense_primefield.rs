@@ -172,7 +172,7 @@ impl<F: PrimeField> Mul<&DensePolyPrimeField<F>> for &DensePolyPrimeField<F> {
 
     fn mul(self, rhs: &DensePolyPrimeField<F>) -> Self::Output {
         let mut output = self.clone();
-        mul_poly(&mut output.0, &rhs.0);
+        mul_poly(&mut output.0, &rhs.0, F::ZERO);
         output
     }
 }
@@ -236,13 +236,13 @@ impl<F: PrimeField> Mul<F> for DensePolyPrimeField<F> {
 
 impl<F: PrimeField> MulAssign<&DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
     fn mul_assign(&mut self, rhs: &DensePolyPrimeField<F>) {
-        mul_poly(&mut self.0, &rhs.0);
+        mul_poly(&mut self.0, &rhs.0, F::ZERO);
     }
 }
 
 impl<F: PrimeField> MulAssign<DensePolyPrimeField<F>> for DensePolyPrimeField<F> {
     fn mul_assign(&mut self, rhs: DensePolyPrimeField<F>) {
-        mul_poly(&mut self.0, &rhs.0);
+        mul_poly(&mut self.0, &rhs.0, F::ZERO);
     }
 }
 
@@ -454,9 +454,7 @@ impl<F: PrimeField> Polynomial<F> for DensePolyPrimeField<F> {
     fn is_cyclotomic(&self) -> bool {
         let m_one = -F::ONE;
         for coeff in &self.0 {
-            if (!(coeff.ct_eq(&m_one) |
-                coeff.ct_eq(&F::ONE) |
-                coeff.ct_eq(&F::ZERO))).into() {
+            if (!(coeff.ct_eq(&m_one) | coeff.ct_eq(&F::ONE) | coeff.ct_eq(&F::ZERO))).into() {
                 return false;
             }
         }

@@ -648,9 +648,7 @@ impl<F: PrimeField> Polynomial<F> for SparsePolyPrimeField<F> {
     fn is_cyclotomic(&self) -> bool {
         let m_one = -F::ONE;
         for coeff in self.0.values() {
-            if (!(coeff.ct_eq(&m_one) |
-                coeff.ct_eq(&F::ONE) |
-                coeff.ct_eq(&F::ZERO))).into() {
+            if (!(coeff.ct_eq(&m_one) | coeff.ct_eq(&F::ONE) | coeff.ct_eq(&F::ZERO))).into() {
                 return false;
             }
         }
