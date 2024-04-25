@@ -7,6 +7,7 @@ mod dense_primefield;
 mod sparse;
 
 pub use dense_primefield::DensePolyPrimeField;
+pub use dense_polydynresidue::DensePolyDynResidue;
 pub use sparse::SparsePolyPrimeField;
 
 use rand::RngCore;
