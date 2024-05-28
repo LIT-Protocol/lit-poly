@@ -623,6 +623,14 @@ impl<F: PrimeField> DensePrimeField<F> {
         Self::from_coefficients(coeffs)
     }
 
+    /// Evaluate the polynomial at the given value
+    pub fn evaluate(&self, value: F) -> F {
+        if self.is_zero() {
+            return F::ZERO;
+        }
+        self.0.iter().rfold(F::ZERO, |acc, c| acc * value + c)
+    }
+
     /// Remove leading coefficients that are zero
     pub fn trim(&mut self) {
         for i in (0..self.0.len()).rev() {

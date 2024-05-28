@@ -542,12 +542,11 @@ impl<const N: usize> DenseDynResidue<N> {
     pub fn evaluate(&self, x: &DynResidue<N>) -> DynResidue<N> {
         if self.is_zero() {
             return DynResidue::zero(*x.params());
-        } else {
-            // Horner's method
-            self.0
-                .iter()
-                .rfold(DynResidue::zero(*x.params()), |acc, c| acc * x + c)
         }
+        // Horner's method
+        self.0
+            .iter()
+            .rfold(DynResidue::zero(*x.params()), |acc, c| acc * x + c)
     }
 
     pub fn is_cyclotomic(&self) -> bool {
